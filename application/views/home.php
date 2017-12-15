@@ -240,7 +240,7 @@
                       <button type="button" name="inputVideo" id="inputVideo" class="btn btn-default"><i class="fa fa-file-video-o"></i>Video</button>
                     </div>
 				 <div class="pull-left">
-					<p><strong><?php echo $this->session->flashdata("error"); ?></strong></p><br>
+					<p><strong style="color:red"><?php echo $this->session->flashdata("error"); ?></strong></p><br>
 				 </div>
                  <div class="pull-right">
 					 <input type="submit" class="btn btn-default submit" name="postBTN" value="Submit">
