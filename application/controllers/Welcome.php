@@ -70,6 +70,9 @@ class Welcome extends CI_Controller {
 		}
 		else
 		{
+			$data['percomment'] = $this->Model->select_comment();
+			$data['peremo'] = $this->Model->select_emo();
+	
 			$count=0;
 			//mencari user yg bukan diri sendiri
 			$lookuser = $this->Model->select_user_notme($this->session->userdata('myusername'));
@@ -95,6 +98,12 @@ class Welcome extends CI_Controller {
 			$this->load->view('home',$data);
 		}
 		
+	}
+	
+	public function delete_post()
+	{
+		$post = $this->input->post();
+		$this->Model->delete_mypost($post['idpost']);
 	}
 	
 	public function register()
@@ -257,6 +266,24 @@ class Welcome extends CI_Controller {
 	
 	public function profile()
 	{
+		$data['percomment'] = $this->Model->select_comment();
+		$data['peremo'] = $this->Model->select_emo();
+		$data["friend"]=null;
+		$counter=0;
+		$frienddata = $this->Model->select_user_notme($this->session->userdata('myusername'));
+		foreach ($frienddata as $row)
+		{
+			$lookfriend = $this->Model->select_friend($row->username,$this->session->userdata('myusername'));
+			if($lookfriend)
+			{
+				$data["friend"][$counter] = $this->Model->select_user_myfriend($row->username);
+				$counter++;
+			}
+		}
+		
+			//mencari user yg bukan diri sendiri
+		$data['allposting'] = $this->Model->select_post_friend($this->session->userdata('myusername'));
+			
 		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
 			
 		$data["mydata"] = $this->Model->select_user_byusername($this->session->userdata('myusername'));

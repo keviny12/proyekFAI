@@ -254,6 +254,14 @@ class Model extends CI_Model {
 		$this->db->delete('friend');
 	}
 	
+	function delete_mypost($idpost){
+		$this->db->where("id_post",$idpost);
+		$this->db->delete('post');
+		
+		$this->db->where("id_post",$idpost);
+		$this->db->delete('disukai');
+	}
+	
 	function select_user(){
 		//$query = "select * from user";
 		$this->db->select("*");

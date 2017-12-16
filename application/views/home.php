@@ -281,7 +281,7 @@
                        </div>
                        <div class="pointer-border"></div>
                      </div>
-                     <p class="post-actions"><?php if($row->username == $this->session->userdata('myusername')){?><a href="#">Edit / Delete</a> - <?php } ?><span class="reactchoose" value=<?php echo $row->id_post ?>>Reaction</span> - <a href="#">Report</a> <span style="margin-left:15%;">
+                     <p class="post-actions"><span class="reactchoose" value=<?php echo $row->id_post ?>>What do you feel ?</span> - <a href="#">Report</a> <span style="margin-left:21%;">
 					 <?php
 						
 						 $like=0;

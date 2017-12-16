@@ -20,7 +20,19 @@
 
 	<script type="text/javascript" src="<?php echo base_url('js/script.js');?>"></script>
 <script type="text/javascript">
+
 	$(document).ready(function(){
+		
+		$(".deletepost").click(function(){
+			var deletemypost = confirm('Are you sure ?');
+			var id_post = $(this).attr('id');
+			if(deletemypost)
+			{
+				$.post("<?php echo base_url(); ?>"+'index.php/Welcome/delete_post',{idpost:id_post},function(value){				
+					window.location = "<?php echo base_url(); ?>"+'index.php/Welcome/profile';
+				});
+			}
+		});
 		$(".contact > .chat").click(function(){
 			//ambil chat dari db
 			var title = $(this).text();
@@ -149,7 +161,7 @@
               <div class="row">
                 <div class="col-md-4 profilepicture">
 				 <img src=<?php echo base_url("ppicture/".$row->pp);?> class="img-thumbnail" alt="">        
-				  <?php  form_upload('ppicture','asdasd',' class="ppicture" ');?><hr><br>
+				  <?php  form_upload('ppicture','asdasd',' class="ppicture" ');?><br>
                    
                 </div>
                 <div class="col-md-8">
@@ -165,34 +177,110 @@
 				  <button type="submit" class="btn btn-default submit">Change Profile</button>
                      
                 </div>
-              </div><br><br>
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h3 class="panel-title">Profile Wall</h3>
-                    </div>
-                    <div class="panel-body">
-                      <form>
-                        <div class="form-group">
-                          <textarea class="form-control" placeholder="Write on the wall"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-default submit">Submit</button>
-                        <div class="pull-right">
-                          <div class="btn-toolbar">
-                            <button type="button" class="btn btn-default"><i class="fa fa-pencil"></i>Text</button>
-                            <button type="button" class="btn btn-default"><i class="fa fa-file-image-o"></i>Image</button>
-                            <button type="button" class="btn btn-default"><i class="fa fa-file-video-o"></i>Video</button>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
+              </div>
+            <hr></hr>
+            </div>
+			
+          </div>
+		  
+		  <?php } ?>
+		    <div class="col-md-8">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">My Posting</h3>
               </div>
             </div>
+	
+			<?php foreach($allposting as $row){?>
+            <div class="panel panel-default post">
+              <div class="panel-body">
+                 <div class="row">
+				 <?php $posting = $row->id_post; ?>
+                   <div class="col-sm-2">
+                     <a href="otherprofile" class="post-avatar thumbnail"><img src=<?php echo base_url("ppicture/".$row->pp);?> alt=""><div class="text-center"><?php echo $row->name ?></div></a>
+                   </div>
+                   <div class="col-sm-10">
+				   <?php if($row->attach != '0'){?>
+				   <embed src=<?php echo base_url("posts/".$row->attach);?>  autostart="false" loop="false" width="80%" height="450px" controller="true" bgcolor="#333333"></embed>
+				   <?php } ?>
+					 <div class="bubble">
+                       <div class="pointer">
+                         <p><?php echo $row->text ?></p>
+                       </div>
+                       <div class="pointer-border"></div>
+                     </div>
+                     <p class="post-actions"><a href="#">Edit</a> - <a href="profile" class="deletepost" id=<?php echo $row->id_post;?> >Delete</a><span style="margin-left:38%;">
+					 <?php
+						
+						 $like=0;
+						 $love=0;					 
+						 $laugh=0;	
+						 $wow=0;	
+						 $sad=0;
+						 $angry=0;
+						 $count=0;
+						 
+					 foreach($peremo as $rows){
+						 if($rows->id_post ==  $posting)
+						 {
+							if($rows->jenislike == 'like')
+							{
+								$like++;
+							}
+							else if($rows->jenislike == 'love')
+							{
+								$love++;
+							}
+							else if($rows->jenislike == 'laugh')
+							{
+								$laugh++;
+							}
+							else if($rows->jenislike == 'wow')
+							{
+								$wow++;
+							}
+							else if($rows->jenislike == 'sad')
+							{
+								$sad++;
+							}
+							else if($rows->jenislike == 'angry')
+							{
+								$angry++;
+							}
+							$count++;
+						 }
+					 } ?>
+					 
+					 <?php echo $like; ?> <img src=<?php echo base_url("emo/like.png");?> width=20> 
+					 <?php echo $love; ?>  <img src=<?php echo base_url("emo/love.png");?> width=20> 
+					 <?php echo $laugh; ?>  <img src=<?php echo base_url("emo/laugh.png");?> width=20> 
+					 <?php echo $wow; ?> <img src=<?php echo base_url("emo/wow.png");?> width=20> 
+					 <?php echo $sad; ?> <img src=<?php echo base_url("emo/sad.png");?> width=20> 
+					 <?php echo $angry; ?> <img src=<?php echo base_url("emo/angry.png");?> width=20>
+					-  <?php echo $count; ?> Likes</span></p>
+                     
+                     <div class="comments">
+
+
+					 <!-- data di for terus dipilah dengan if milik siapa komen tsb -->
+					 <?php $postnow = $row->id_post; foreach($percomment as $row) { if($row->id_post == $postnow && $row->id_user == $this->session->userdata('myusername') ){ ?>
+                       <div class="comment">
+                         <a href="otherprofile" class="comment-avatar pull-left"><img src=<?php echo base_url("ppicture/".$row->pp);?> alt=""></a>
+                         <div class="comment-text">
+                           <?php echo $row->text;?>
+						   <div class='datetime'> at: <?php echo $row->date;?> | by: <a href="otherprofile"> <?php echo $row->name;?></a>   </div>
+                         </div>
+                       </div>
+                       <div class="clearfix"></div>
+					 <?php }} ?>
+
+                     </div>
+                   </div>
+                 </div>
+              </div>
+            </div>
+		 <?php } ?>
           </div>
-		  <?php } ?>
           <div class="col-md-4">
             <div class="panel panel-default friends">
               <div class="panel-heading">
@@ -200,13 +288,14 @@
               </div>
               <div class="panel-body">
                 <ul>
-                  <li><a href="otherprofile" class="thumbnail"><img src="img/user.png" alt=""></a></li>
-                  <li><a href="otherprofile" class="thumbnail"><img src="img/user.png" alt=""></a></li>
-                  <li><a href="otherprofile" class="thumbnail"><img src="img/user.png" alt=""></a></li>
-                  <li><a href="otherprofile" class="thumbnail"><img src="img/user.png" alt=""></a></li>
+				
+				 <?php if($friend != null){ foreach($friend as $row){?>
+                  <li><a href="otherprofile" class="thumbnail"><img src=<?php echo base_url("ppicture/".$row[0]->pp);?> alt=""></a></li>
+				 <?php }}?>
+				 
                 </ul>
                 <div class="clearfix"></div>
-                <a class="btn btn-primary mybutton" href="#">View All Friends</a>
+                <a class="btn btn-primary mybutton" href="member">View All Friends</a>
               </div>
             </div>
             <div class="panel panel-default groups">
@@ -238,6 +327,8 @@
           </div>
         </div>
       </div>
+	  
+	  
     </section>
 <?php echo form_close(); ?>
     <footer>
