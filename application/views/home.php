@@ -135,6 +135,12 @@
 			
 		});
 		
+		$(".reply").click(function(e){
+			e.preventDefault();
+			var replyname = $(this).attr("name");
+			var postid = $(this).attr("id");
+			$("input[name='" + postid + "']").val("@" + replyname + " ");
+		});
 		
 	});
 	</script>
@@ -287,7 +293,7 @@
                        </div>
                        <div class="pointer-border"></div>
                      </div>
-                     <p class="post-actions"><span class="reactchoose" value=<?php echo $row->id_post ?>>What do you feel ?</span> - <a href="#">Report</a> <span style="margin-left:21%;">
+                     <p class="post-actions"><span class="reactchoose" value=<?php echo $row->id_post ?>>What do you feel ?</span> | <a href="#">Report</a> <span style="margin-left:21%;">
 					 <?php
 						
 						 $like=0;
@@ -335,14 +341,14 @@
 					 <?php echo $wow; ?> <img src=<?php echo base_url("emo/wow.png");?> width=20> 
 					 <?php echo $sad; ?> <img src=<?php echo base_url("emo/sad.png");?> width=20> 
 					 <?php echo $angry; ?> <img src=<?php echo base_url("emo/angry.png");?> width=20>
-					-  <?php echo $count; ?> Likes</span></p>
+					 &nbsp;|&nbsp;<?php echo $count; ?> Likes</span></p>
                      
 					 <div class="comment-form ">
                        <form class="form-inline">
 					   <div class="reaction" id=<?php echo $row->id_post ?>><img src=<?php echo base_url("emo/like.png");?> class="emo" value="like" id=<?php echo $row->id_post ?> width=40> <img src=<?php echo base_url("emo/love.png");?> class="emo" value="love" id=<?php echo $row->id_post ?> width=40> <img src=<?php echo base_url("emo/laugh.png");?> id=<?php echo $row->id_post ?> class="emo" value="laugh" width=40> <img src=<?php echo base_url("emo/wow.png");?> id=<?php echo $row->id_post ?> class="emo" value="wow" width=40> <img src=<?php echo base_url("emo/sad.png");?> class="emo" id=<?php echo $row->id_post ?> value="sad" width=40> <img src=<?php echo base_url("emo/angry.png");?> class="emo" value="angry"  id=<?php echo $row->id_post ?> width=40> 
 						</div>
                         <div class="form-group">
-                          <input type="text" class="form-control <?php $postnow = $row->id_post; echo $row->id_post;?>" id=<?php echo $row->username; ?> placeholder="enter comment">
+                          <input type="text" class="form-control <?php $postnow = $row->id_post; echo $row->id_post;?>" id=<?php echo $row->username; ?> name=<?php echo $row->id_post?> placeholder="enter comment">
                         </div>
                         <button type="button" id=<?php echo $row->id_post;?> class="btn btn-default add">Add</button>
 						</form>
@@ -353,12 +359,12 @@
 
 
 					 <!-- data di for terus dipilah dengan if milik siapa komen tsb -->
-					 <?php foreach($percomment as $row) { if($row->id_post == $postnow && $row->id_user == $this->session->userdata('myusername') ){ ?>
+					 <?php foreach($percomment as $row) { if($row->id_post == $postnow){ ?>
                        <div class="comment">
                          <a href="otherprofile" class="comment-avatar pull-left"><img src=<?php echo base_url("ppicture/".$row->pp);?> alt=""></a>
                          <div class="comment-text">
                            <?php echo $row->text;?>
-						   <div class='datetime'> at: <?php echo $row->date;?> | by: <a href="otherprofile"> <?php echo $row->name;?></a>   </div>
+						   <div class='datetime'> at: <?php echo $row->date;?> | by: <a href="otherprofile"> <?php echo $row->name;?></a> | <a href="#" name=<?php echo $row->username;?> id=<?php echo $row->id_post;?> class="reply"> Reply</a> </div>
                          </div>
                        </div>
                        <div class="clearfix"></div>

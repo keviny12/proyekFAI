@@ -696,13 +696,49 @@ class Welcome extends CI_Controller {
 	public function add_comment()
 	{
 		$post = $this->input->post();
-		$this->Model->insert_comment($post["simpankomen"],$this->session->userdata('myusername'),$post["simpanpost"],$post["simpanreply"]);		
+		$komentar = $post['simpankomen'];
+		preg_match_all('/(#\w+)/', $komentar, $results);
+		foreach ($results[0] as $hashtag)
+		{
+			$komentar = str_replace($hashtag,"<a href='search_hashtag/".trim($hashtag,"#")."'>".$hashtag."</a>",$komentar);
+		}
+		preg_match_all('/(@\w+)/', $komentar, $results);
+		foreach ($results[0] as $mention)
+		{
+			$ownmention = $this->session->userdata("myusername");
+			if (trim($mention,"@") == $ownmention)
+			{
+				$komentar = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$komentar);
+			}
+			else
+			{
+				$allfriends = $this->Model->select_userfriend_notme($this->session->userdata("myusername"));
+				if ($allfriends != null)
+				{	
+					foreach ($allfriends as $row)
+					{	
+						if ($row->username == trim($mention,"@"))
+						{
+							$komentar = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$komentar);
+						}
+					}
+				}
+			}
+		}
+		$this->Model->insert_comment($komentar,$this->session->userdata('myusername'),$post["simpanpost"],$post["simpanreply"]);		
 	}
 	
 	public function goto_mention($usermention)
 	{
-		$this->session->set_userdata("userfriend",$usermention);
-		redirect("Welcome/goto_otherprofile");
+		if ($usermention == $this->session->userdata("myusername"))
+		{
+			redirect("Welcome/profile");
+		}
+		else
+		{
+			$this->session->set_userdata("userfriend",$usermention);
+			redirect("Welcome/goto_otherprofile");
+		}
 	}
 	
 	public function add_emo(){
@@ -726,14 +762,22 @@ class Welcome extends CI_Controller {
 				preg_match_all('/(@\w+)/', $postingan, $results);
 				foreach ($results[0] as $mention)
 				{
-					$allfriends = $this->Model->select_userfriend_notme($this->session->userdata("myusername"));
-					if ($allfriends != null)
-					{	
-						foreach ($allfriends as $row)
+					$ownmention = $this->session->userdata("myusername");
+					if (trim($mention,"@") == $ownmention)
+					{
+						$postingan = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$postingan);
+					}
+					else
+					{
+						$allfriends = $this->Model->select_userfriend_notme($this->session->userdata("myusername"));
+						if ($allfriends != null)
 						{	
-							if ($row->username == trim($mention,"@"))
-							{
-								$postingan = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$postingan);
+							foreach ($allfriends as $row)
+							{	
+								if ($row->username == trim($mention,"@"))
+								{
+									$postingan = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$postingan);
+								}
 							}
 						}
 					}
