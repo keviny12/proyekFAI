@@ -316,6 +316,7 @@ class Model extends CI_Model {
 		$this->db->distinct();
 		$this->db->join("friend f","f.id_friend like  CONCAT('%', u.username, '%')");
 		$this->db->where_not_in("u.username",$id);
+		$this->db->like("f.id_friend",$id);
 		$this->db->where("u.active",1);
 		$this->db->where("u.on",1);
 		$result = $this->db->get();
