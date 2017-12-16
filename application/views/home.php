@@ -262,8 +262,14 @@
               </div>
 			  <?php echo form_close(); ?>
             </div>
-	
+			
 			<?php foreach($allposting as $row){?>
+			<?php  foreach($friend as $rows){
+				
+			if($row->id_user == $rows[0]->username ){
+				echo $rows[0]->username;
+			?>
+
             <div class="panel panel-default post">
               <div class="panel-body">
                  <div class="row">
@@ -356,14 +362,14 @@
                          </div>
                        </div>
                        <div class="clearfix"></div>
-					 <?php }} ?>
+			<?php }} ?>
 
                      </div>
                    </div>
                  </div>
               </div>
             </div>
-		 <?php } ?>
+			<?php }}} ?>
           </div>
           <div class="col-md-4">
             <div class="panel panel-default groups">

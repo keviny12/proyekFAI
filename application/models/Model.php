@@ -260,6 +260,9 @@ class Model extends CI_Model {
 		
 		$this->db->where("id_post",$idpost);
 		$this->db->delete('disukai');
+		
+		$this->db->where("id_post",$idpost);
+		$this->db->delete('comment');
 	}
 	
 	function select_user(){
@@ -289,7 +292,14 @@ class Model extends CI_Model {
 		$result = $this->db->get();
 		return $result->result();
 	}
-	
+	function select_alluser(){
+		//mencari semua user yang bukan user aktif
+		$this->db->select("*");
+		$this->db->distinct();
+		$this->db->from("user");
+		$result = $this->db->get();
+		return $result->result();
+	}
 	function select_user_notme($id){
 		//mencari semua user yang bukan user aktif
 		$this->db->select("*");
@@ -303,6 +313,7 @@ class Model extends CI_Model {
 		//mencari semua user yang merupakan teman dan aktif
 		$this->db->select("*");
 		$this->db->from("user u");
+		$this->db->distinct();
 		$this->db->join("friend f","f.id_friend like  CONCAT('%', u.username, '%')");
 		$this->db->where_not_in("u.username",$id);
 		$this->db->where("u.active",1);
@@ -314,6 +325,7 @@ class Model extends CI_Model {
 	function select_user_notfriend($id_friend, $id){
 		//mencari user yang bukan friend dari si user aktif
 		$this->db->select("*");
+		$this->db->distinct();
 		$this->db->from("friend");
 		$this->db->like("id_friend",$id);
 		$this->db->like("id_friend",$id_friend);
@@ -325,6 +337,7 @@ class Model extends CI_Model {
 		//ambil data user yg bukan friend
 		$this->db->select("*");
 		$this->db->from("user");
+		$this->db->distinct();
 		$this->db->where("username",$id);
 		$result = $this->db->get();
 		return $result->result();
@@ -334,6 +347,7 @@ class Model extends CI_Model {
 		//cek apakah user yg friend
 		$this->db->select("*");
 		$this->db->from("friend f");
+		$this->db->distinct();
 		$this->db->like("f.id_friend",$id);
 		$this->db->like("f.id_friend",$friend);
 		$result = $this->db->get();
@@ -343,6 +357,7 @@ class Model extends CI_Model {
 	{
 		$this->db->select("*");
 		$this->db->from("group_member");
+		$this->db->distinct();
 		$this->db->where("id_group",$idgroup);
 		$this->db->where("id_user",$username);
 		$result = $this->db->get();
@@ -360,6 +375,7 @@ class Model extends CI_Model {
 		//ambil data user yg friend
 		$this->db->select("*");
 		$this->db->from("user");
+		$this->db->distinct();
 		$this->db->where("username",$id);
 		$result = $this->db->get();
 		return $result->result();
@@ -381,12 +397,20 @@ class Model extends CI_Model {
 		return $result->result();
 	}
 	
-	function select_post_friend($id){
-		$idd = explode("_",$id);
+	function select_post_friend(){
 		$this->db->select("*");
 		$this->db->from("post p");
 		$this->db->join("user u","u.username = p.id_user");
-		$this->db->where("p.id_user",$idd[0]);
+		$this->db->order_by('p.id_post', 'desc');
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function select_mypost_friend($id){
+		$this->db->select("*");
+		$this->db->from("post p");
+		$this->db->join("user u","u.username = p.id_user");
+		$this->db->where("u.username",$id);
 		$this->db->order_by('p.id_post', 'desc');
 		$result = $this->db->get();
 		return $result->result();

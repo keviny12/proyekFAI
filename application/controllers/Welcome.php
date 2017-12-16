@@ -94,6 +94,19 @@ class Welcome extends CI_Controller {
 					$count++;
 				}
 			}
+			
+			$counter=0;
+			$data["friend"]=null;
+			$frienddata = $this->Model->select_alluser();
+			foreach ($frienddata as $row)
+			{
+				$lookfriend = $this->Model->select_friend($row->username,$this->session->userdata('myusername'));
+				if($lookfriend)
+				{
+					$data["friend"][$counter] = $this->Model->select_user_myfriend($row->username);
+					$counter++;
+				}
+			}
 
 			$this->load->view('home',$data);
 		}
@@ -282,7 +295,7 @@ class Welcome extends CI_Controller {
 		}
 		
 			//mencari user yg bukan diri sendiri
-		$data['allposting'] = $this->Model->select_post_friend($this->session->userdata('myusername'));
+		$data['allposting'] = $this->Model->select_mypost_friend($this->session->userdata('myusername'));
 			
 		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
 			
@@ -553,7 +566,7 @@ class Welcome extends CI_Controller {
 		
 			//mencari user yg bukan diri sendiri
 			$lookuser = $this->Model->select_user_notme($this->session->userdata('myusername'));
-			$data['allposting'] = $this->Model->select_post_friend($this->session->userdata('myusername'));
+			$data['allposting'] = $this->Model->select_post_friend();
 			
 			$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
 			foreach($lookuser as $row)
@@ -568,6 +581,20 @@ class Welcome extends CI_Controller {
 					$count++;
 				}
 			}
+			
+			$counter=0;
+			$data["friend"]=null;
+			$frienddata = $this->Model->select_alluser();
+			foreach ($frienddata as $row)
+			{
+				$lookfriend = $this->Model->select_friend($row->username,$this->session->userdata('myusername'));
+				if($lookfriend)
+				{
+					$data["friend"][$counter] = $this->Model->select_user_myfriend($row->username);
+					$counter++;
+				}
+			}
+
 
 		$this->load->view('home',$data);
 	}
