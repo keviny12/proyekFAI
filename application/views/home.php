@@ -37,8 +37,16 @@
             }
 	$(document).ready(function(){
 		
-		$('#idImage').click(function(){
-			
+		$('.reaction').slideUp();
+		
+		$('.reactchoose').click(function(){
+			var title = $(this).attr('value');
+			$('#'+title).slideDown();
+		});
+		
+		$('.emo').click(function(){
+			var myemo = $(this).attr('value');
+			alert(myemo);
 		});
 		
 		$(".contact > .chat").click(function(){
@@ -234,7 +242,7 @@
                     <textarea class="form-control" placeholder="Write on the wall" name="comment"></textarea>
                   </div>
 				     <div class="btn-toolbar">
-					<input type="file" name="openImage" id="openImage" style="display:none;"  accept="image/*">
+					<input type="file" name="openImage" id="openImage"  style="display:none;" accept="image/*">
                       <button type="button" name="inputImage" id="inputImage" class="btn btn-default"><i class="fa fa-file-image-o"></i>Image</button>
 					<input type="file" name="openVideo" id="openVideo" style="display:none;" accept="video/*">
                       <button type="button" name="inputVideo" id="inputVideo" class="btn btn-default"><i class="fa fa-file-video-o"></i>Video</button>
@@ -245,7 +253,6 @@
                  <div class="pull-right">
 					 <input type="submit" class="btn btn-default submit" name="postBTN" value="Submit">
                   </div>
-
 
               </div>
 			  <?php echo form_close(); ?>
@@ -258,7 +265,6 @@
 				 
                    <div class="col-sm-2">
                      <a href="otherprofile" class="post-avatar thumbnail"><img src=<?php echo base_url("ppicture/".$row->pp);?> alt=""><div class="text-center"><?php echo $row->name ?></div></a>
-                     <div class="likes text-center"><?php echo $row->disukai ?> Likes</div>
                    </div>
                    <div class="col-sm-10">
 				   <?php if($row->attach != '0'){?>
@@ -270,15 +276,17 @@
                        </div>
                        <div class="pointer-border"></div>
                      </div>
-                     <p class="post-actions"><?php if($row->username == $this->session->userdata('myusername')){?><a href="#">Edit / Delete</a> - <?php } ?><a href="#">Reaction</a> - <a href="#">Report</a></p>
+                     <p class="post-actions"><?php if($row->username == $this->session->userdata('myusername')){?><a href="#">Edit / Delete</a> - <?php } ?><span class="reactchoose" value=<?php echo $row->id_post ?>>Reaction</span> - <a href="#">Report</a> <span style="margin-left:55%;"><?php echo count($row->disukai); ?> Likes</span></p>
                      
 					 <div class="comment-form ">
                        <form class="form-inline">
+					   <div class="reaction" id=<?php echo $row->id_post ?>><img src=<?php echo base_url("emo/like.png");?> class="emo" value="like" width=40> <img src=<?php echo base_url("emo/love.png");?> class="emo" value="love" width=40> <img src=<?php echo base_url("emo/laugh.png");?> class="emo" value="laugh" width=40> <img src=<?php echo base_url("emo/wow.png");?> class="emo" value="wow" width=40> <img src=<?php echo base_url("emo/sad.png");?> class="emo" value="sad" width=40> <img src=<?php echo base_url("emo/angry.png");?> class="emo" value="angry" width=40> 
+						</div>
                         <div class="form-group">
                           <input type="text" class="form-control <?php $postnow = $row->id_post; echo $row->id_post;?>" id=<?php echo $row->username; ?> placeholder="enter comment">
                         </div>
                         <button type="button" id=<?php echo $row->id_post;?> class="btn btn-default add">Add</button>
-                      </form>
+						</form>
                      </div>
                      <div class="clearfix"></div>
 
@@ -291,7 +299,7 @@
                          <a href="otherprofile" class="comment-avatar pull-left"><img src=<?php echo base_url("ppicture/".$row->pp);?> alt=""></a>
                          <div class="comment-text">
                            <?php echo $row->text;?>
-						   <div class='datetime'> at: <?php echo $row->date;?> | by: <a href="otherprofile" <?php echo $row->name;?></u>   </div>
+						   <div class='datetime'> at: <?php echo $row->date;?> | by: <a href="otherprofile"> <?php echo $row->name;?></a>   </div>
                          </div>
                        </div>
                        <div class="clearfix"></div>

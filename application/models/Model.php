@@ -370,6 +370,7 @@ class Model extends CI_Model {
 		$this->db->from("post p");
 		$this->db->join("user u","u.username = p.id_user");
 		$this->db->where("p.id_user",$idd[0]);
+		$this->db->order_by('p.id_post', 'desc');
 		$result = $this->db->get();
 		return $result->result();
 	}

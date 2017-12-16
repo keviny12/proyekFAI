@@ -677,33 +677,28 @@ class Welcome extends CI_Controller {
 					}
 				}
 		        $config['upload_path']          = './posts/';
-                $config['allowed_types']        = 'jpeg|jpg|png|mp4|mkv|avi|wmv';
+                $config['allowed_types']        = 'jpeg|jpg|png|mp4|mkv|avi|wmv|mov';
                 $this->load->library('upload', $config);
-				if ( ! $this->upload->do_upload('openVideo'))
-				{		
-					$this->session->set_flashdata("error",$this->upload->display_errors());
-					if ($post['comment'] != "")
-					{
-						$this->Model->insert_post($this->session->userdata('myusername'),$postingan,0,1,1);
-					}
-					redirect('Welcome/login_page');
-				}
-				else
-				{
-					$te = $this->upload->data();
-					$namafile = $te["file_name"];
-					$this->Model->insert_post($this->session->userdata('myusername'),$postingan,$namafile,1,1);
-					redirect('Welcome/login_page');
-				}
+			
 						
 		        if ( ! $this->upload->do_upload('openImage'))
                 {		
-					$this->session->set_flashdata("error",$this->upload->display_errors());
-					if ($post['comment'] != "")
-					{
-						$this->Model->insert_post($this->session->userdata('myusername'),$postingan,0,1,1);
+					if ( ! $this->upload->do_upload('openVideo'))
+					{		
+						$this->session->set_flashdata("error",$this->upload->display_errors());
+						if ($post['comment'] != "")
+						{
+							$this->Model->insert_post($this->session->userdata('myusername'),$postingan,0,1,1);
+						}
+						redirect('Welcome/login_page');
 					}
-					redirect('Welcome/login_page');	
+					else
+					{
+						$te = $this->upload->data();
+						$namafile = $te["file_name"];
+						$this->Model->insert_post($this->session->userdata('myusername'),$postingan,$namafile,1,1);
+						redirect('Welcome/login_page');
+					}
                 }
                 else
                 {

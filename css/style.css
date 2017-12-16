@@ -259,7 +259,13 @@ header .logo{
 	display:inline;
 	float:left;
 }
-
+.emo{
+	cursor:pointer;
+}
+.emo:hover{
+	border-radius:40px;
+	 box-shadow: 0px 0px 10px #74008d;
+}
 .friends img{
 	width: 100px;
 }
@@ -347,7 +353,14 @@ footer{
 	margin-top: 30px;
 	border-top: 7px solid #74008d;
 }
-
+.reactchoose{
+	color:#2f7eb7; 
+	cursor:pointer;
+}
+.reactchoose:hover{
+	color:#205276;
+	text-decoration:underline;
+}
 .members .member-row{
 	border-bottom: 1px solid #74008d;
 	padding-bottom: 20px;
