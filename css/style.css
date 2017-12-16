@@ -353,6 +353,11 @@ footer{
 	margin-top: 30px;
 	border-top: 7px solid #74008d;
 }
+.reaction{
+	border-radius:10px;
+	background-image: linear-gradient(#7c0097, #770091 60%, #510062);
+	padding:5px;
+}
 .reactchoose{
 	color:#2f7eb7; 
 	cursor:pointer;

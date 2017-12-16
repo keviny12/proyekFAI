@@ -61,6 +61,15 @@ class Model extends CI_Model {
 		$this->db->insert('comment',$data);
 	}
 	
+	function insert_emo($post,$user,$emo){
+		$data = array(
+			'id_post' => $post,
+			'id_user' => $user,
+			'jenislike' =>	$emo
+		);
+		$this->db->insert('disukai',$data);
+	}
+	
 	function insert_group($idgroup,$groupname,$myusername,$groupimage,$caption){
 		$data = array(
 			'id_group' => $idgroup,
@@ -444,6 +453,14 @@ class Model extends CI_Model {
 		$this->db->from("comment c");
 		$this->db->join("user u","c.id_user = u.username");
 		$this->db->order_by('c.id_comment', 'desc');
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function select_emo(){
+		//$query = "select * from user";
+		$this->db->select("*");
+		$this->db->from("disukai");
 		$result = $this->db->get();
 		return $result->result();
 	}

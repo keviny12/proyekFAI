@@ -521,6 +521,7 @@ class Welcome extends CI_Controller {
 		$data["alluser"]=null;
 		//komentar posting
 		$data['percomment'] = $this->Model->select_comment();
+		$data['peremo'] = $this->Model->select_emo();
 	
 		
 			//mencari user yg bukan diri sendiri
@@ -650,6 +651,13 @@ class Welcome extends CI_Controller {
 		redirect("Welcome/goto_otherprofile");
 	}
 	
+	public function add_emo(){
+		
+		$post = $this->input->post();
+		$this->Model->insert_emo($post["simpanpost"],$this->session->userdata('myusername'),$post["simpanemo"]);		
+	
+		redirect("Welcome/login_page");
+	}
 	public function home()
 	{
 		

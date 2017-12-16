@@ -41,12 +41,17 @@
 		
 		$('.reactchoose').click(function(){
 			var title = $(this).attr('value');
-			$('#'+title).slideDown();
+			$('#'+title).slideToggle();
 		});
 		
 		$('.emo').click(function(){
 			var myemo = $(this).attr('value');
-			alert(myemo);
+			var idpost = $(this).attr('id');
+			
+			$.post("<?php echo base_url(); ?>"+'index.php/Welcome/add_emo',{simpanpost:idpost,simpanemo:myemo},function(value){				
+					window.location = "<?php echo base_url(); ?>"+'index.php/Welcome/login_page';
+			});
+			
 		});
 		
 		$(".contact > .chat").click(function(){
@@ -215,7 +220,7 @@
             foreach($alluser as $row){ ?>
 
 
-						<li class="otherfriend" id="<?php echo $row[0]->username ?>"><a class="thumbnail"><img src=<?php echo base_url("ppicture/".$row[0]->pp);?> width='100' alt=""></a></li>
+						<li class="otherfriend" id="<?php echo $row[0]->username ?>"><a class="thumbnail"><img src=<?php echo base_url("ppicture/".$row[0]->pp);?> style="width:100px; height:100px;" alt=""></a></li>
 					<?php }
 					echo '<li><a class="btn btn-primary mybutton" href="#"> More Suggested > </a></li>';
 
@@ -262,7 +267,7 @@
             <div class="panel panel-default post">
               <div class="panel-body">
                  <div class="row">
-				 
+				 <?php $posting = $row->id_post; ?>
                    <div class="col-sm-2">
                      <a href="otherprofile" class="post-avatar thumbnail"><img src=<?php echo base_url("ppicture/".$row->pp);?> alt=""><div class="text-center"><?php echo $row->name ?></div></a>
                    </div>
@@ -276,11 +281,59 @@
                        </div>
                        <div class="pointer-border"></div>
                      </div>
-                     <p class="post-actions"><?php if($row->username == $this->session->userdata('myusername')){?><a href="#">Edit / Delete</a> - <?php } ?><span class="reactchoose" value=<?php echo $row->id_post ?>>Reaction</span> - <a href="#">Report</a> <span style="margin-left:55%;"><?php echo count($row->disukai); ?> Likes</span></p>
+                     <p class="post-actions"><?php if($row->username == $this->session->userdata('myusername')){?><a href="#">Edit / Delete</a> - <?php } ?><span class="reactchoose" value=<?php echo $row->id_post ?>>Reaction</span> - <a href="#">Report</a> <span style="margin-left:15%;">
+					 <?php
+						
+						 $like=0;
+						 $love=0;					 
+						 $laugh=0;	
+						 $wow=0;	
+						 $sad=0;
+						 $angry=0;
+						 $count=0;
+						 
+					 foreach($peremo as $rows){
+						 if($rows->id_post ==  $posting)
+						 {
+							if($rows->jenislike == 'like')
+							{
+								$like++;
+							}
+							else if($rows->jenislike == 'love')
+							{
+								$love++;
+							}
+							else if($rows->jenislike == 'laugh')
+							{
+								$laugh++;
+							}
+							else if($rows->jenislike == 'wow')
+							{
+								$wow++;
+							}
+							else if($rows->jenislike == 'sad')
+							{
+								$sad++;
+							}
+							else if($rows->jenislike == 'angry')
+							{
+								$angry++;
+							}
+							$count++;
+						 }
+					 } ?>
+					 
+					 <?php echo $like; ?> <img src=<?php echo base_url("emo/like.png");?> width=20> 
+					 <?php echo $love; ?>  <img src=<?php echo base_url("emo/love.png");?> width=20> 
+					 <?php echo $laugh; ?>  <img src=<?php echo base_url("emo/laugh.png");?> width=20> 
+					 <?php echo $wow; ?> <img src=<?php echo base_url("emo/wow.png");?> width=20> 
+					 <?php echo $sad; ?> <img src=<?php echo base_url("emo/sad.png");?> width=20> 
+					 <?php echo $angry; ?> <img src=<?php echo base_url("emo/angry.png");?> width=20>
+					-  <?php echo $count; ?> Likes</span></p>
                      
 					 <div class="comment-form ">
                        <form class="form-inline">
-					   <div class="reaction" id=<?php echo $row->id_post ?>><img src=<?php echo base_url("emo/like.png");?> class="emo" value="like" width=40> <img src=<?php echo base_url("emo/love.png");?> class="emo" value="love" width=40> <img src=<?php echo base_url("emo/laugh.png");?> class="emo" value="laugh" width=40> <img src=<?php echo base_url("emo/wow.png");?> class="emo" value="wow" width=40> <img src=<?php echo base_url("emo/sad.png");?> class="emo" value="sad" width=40> <img src=<?php echo base_url("emo/angry.png");?> class="emo" value="angry" width=40> 
+					   <div class="reaction" id=<?php echo $row->id_post ?>><img src=<?php echo base_url("emo/like.png");?> class="emo" value="like" id=<?php echo $row->id_post ?> width=40> <img src=<?php echo base_url("emo/love.png");?> class="emo" value="love" id=<?php echo $row->id_post ?> width=40> <img src=<?php echo base_url("emo/laugh.png");?> id=<?php echo $row->id_post ?> class="emo" value="laugh" width=40> <img src=<?php echo base_url("emo/wow.png");?> id=<?php echo $row->id_post ?> class="emo" value="wow" width=40> <img src=<?php echo base_url("emo/sad.png");?> class="emo" id=<?php echo $row->id_post ?> value="sad" width=40> <img src=<?php echo base_url("emo/angry.png");?> class="emo" value="angry"  id=<?php echo $row->id_post ?> width=40> 
 						</div>
                         <div class="form-group">
                           <input type="text" class="form-control <?php $postnow = $row->id_post; echo $row->id_post;?>" id=<?php echo $row->username; ?> placeholder="enter comment">
