@@ -340,6 +340,7 @@ class Model extends CI_Model {
 		//mencari semua user yang merupakan teman dan aktif
 		$this->db->select("*");
 		$this->db->from("user u");
+		$this->db->distinct();
 		$this->db->join("friend f","f.id_friend like  CONCAT('%', u.username, '%')");
 		$this->db->where_not_in("u.username",$id);
 		$this->db->like("f.id_friend",$id);
@@ -431,6 +432,25 @@ class Model extends CI_Model {
 		$this->db->order_by('p.id_post', 'desc');
 		$result = $this->db->get();
 		return $result->result();
+	}
+	
+	function select_post_hashtag($hashtag){
+		$this->db->select("*");
+		$this->db->from("post p");
+		$this->db->join("user u","u.username = p.id_user");
+		$this->db->like("p.text","#".$hashtag);
+		$this->db->order_by('p.id_post', 'desc');
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function count_hashtags($hashtag){
+		$this->db->select("*");
+		$this->db->from("post p");
+		$this->db->join("user u","u.username = p.id_user");
+		$this->db->like("p.text","#".$hashtag);
+		$this->db->order_by('p.id_post', 'desc');
+		return $this->db->count_all_results();
 	}
 	
 	function select_mypost_friend($id){

@@ -74,47 +74,76 @@ class Welcome extends CI_Controller {
 		}
 		else
 		{
-			$data['percomment'] = $this->Model->select_comment();
-			$data['peremo'] = $this->Model->select_emo();
-	
-			$count=0;
-			//mencari user yg bukan diri sendiri
-			$lookuser = $this->Model->select_user_notme($this->session->userdata('myusername'));
-			//mencari user aktif yg bukan diri sendiri
-			$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
-			$data['allposting'] = $this->Model->select_post_friend($this->session->userdata('myusername'));
-			//komentar posting
-			$data['percomment'] = $this->Model->select_comment();
-			
-			foreach($lookuser as $row)
-			{
-				//mencari user yg bukan teman
-				$friend = $this->Model->select_user_notfriend($row->username,$this->session->userdata('myusername'));
-				
-				if(!$friend)
-				{
-					//ambil data user yang bukan teman
-					$data["alluser"][$count]=$this->Model->select_user_notmyfriend($row->username);
-					$count++;
-				}
-			}
-			
-			$counter=0;
-			$data["friend"]=null;
-			$frienddata = $this->Model->select_alluser();
-			foreach ($frienddata as $row)
-			{
-				$lookfriend = $this->Model->select_friend($row->username,$this->session->userdata('myusername'));
-				if($lookfriend)
-				{
-					$data["friend"][$counter] = $this->Model->select_user_myfriend($row->username);
-					$counter++;
-				}
-			}
-
-			$this->load->view('home',$data);
+			redirect("Welcome/link_home");
 		}
 		
+	}
+	
+	public function search_hashtag($hashtag)
+	{
+		$data['percomment'] = $this->Model->select_comment();
+		$data['peremo'] = $this->Model->select_emo();
+
+		//mencari user yg bukan diri sendiri
+		$lookuser = $this->Model->select_user_notme($this->session->userdata('myusername'));
+		//mencari user aktif yg bukan diri sendiri
+		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
+		$data['allposting'] = $this->Model->select_post_hashtag($hashtag);
+		if ($data['allposting'] == null)
+		{
+			$data["textresults"] = "Sorry, we couldn't find posts with the hashtag #".$hashtag;
+		}
+		else
+		{
+			$tagcount = $this->Model->count_hashtags($hashtag);
+			$data["textresults"] = "Showing ".$tagcount." posts with the hashtag #".$hashtag. " : ";
+		}
+		//komentar posting
+		$data['percomment'] = $this->Model->select_comment();
+		$this->load->view('explore',$data);
+	}
+	
+	function link_home()
+	{
+		$data['percomment'] = $this->Model->select_comment();
+		$data['peremo'] = $this->Model->select_emo();
+
+		$count=0;
+		//mencari user yg bukan diri sendiri
+		$lookuser = $this->Model->select_user_notme($this->session->userdata('myusername'));
+		//mencari user aktif yg bukan diri sendiri
+		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
+		$data['allposting'] = $this->Model->select_post_friend($this->session->userdata('myusername'));
+		//komentar posting
+		$data['percomment'] = $this->Model->select_comment();
+		
+		foreach($lookuser as $row)
+		{
+			//mencari user yg bukan teman
+			$friend = $this->Model->select_user_notfriend($row->username,$this->session->userdata('myusername'));
+			
+			if(!$friend)
+			{
+				//ambil data user yang bukan teman
+				$data["alluser"][$count]=$this->Model->select_user_notmyfriend($row->username);
+				$count++;
+			}
+		}
+		
+		$counter=0;
+		$data["friend"]=null;
+		$frienddata = $this->Model->select_alluser();
+		foreach ($frienddata as $row)
+		{
+			$lookfriend = $this->Model->select_friend($row->username,$this->session->userdata('myusername'));
+			if($lookfriend)
+			{
+				$data["friend"][$counter] = $this->Model->select_user_myfriend($row->username);
+				$counter++;
+			}
+		}
+
+		$this->load->view('home',$data);
 	}
 	
 	public function delete_post()
