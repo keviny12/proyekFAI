@@ -21,7 +21,25 @@
 	<script type="text/javascript" src="<?php echo base_url('js/script.js');?>"></script>
 <script type="text/javascript">
 
+				function setup() {
+					document.getElementById('inputImage').addEventListener('click', openDialog);
+					function openDialog() {
+						document.getElementById('openImage').click();
+					}
+						document.getElementById('inputVideo').addEventListener('click', openDialog2);
+					function openDialog2() {
+						document.getElementById('openVideo').click();
+					}
+				}
+				
+				
 	$(document).ready(function(){
+		$('.editposting').slideUp();
+		
+		$(".editmypost").click(function(){
+			var id_post = $(this).attr('id');
+			$('.'+id_post).slideToggle();
+		});
 		
 		$(".deletepost").click(function(){
 			var deletemypost = confirm('Are you sure ?');
@@ -33,6 +51,7 @@
 				});
 			}
 		});
+		
 		$(".contact > .chat").click(function(){
 			//ambil chat dari db
 			var title = $(this).text();
@@ -83,7 +102,7 @@
 		});
 	});
 </script>
-  <body>
+  <body onload="setup()">
  <?php echo form_open_multipart('Welcome/home'); ?>
   <header>
     <div class="container">
@@ -209,7 +228,7 @@
                        </div>
                        <div class="pointer-border"></div>
                      </div>
-                     <p class="post-actions"><a href="#">Edit</a> - <a href="profile" class="deletepost" id=<?php echo $row->id_post;?> >Delete</a><span style="margin-left:38%;">
+                     <p class="post-actions"><span class="editmypost reactchoose" id=<?php  echo $row->id_post; ?> >Edit</span> - <a href="profile" class="deletepost" id=<?php echo $row->id_post;?> >Delete</a><span style="margin-left:38%;">
 					 <?php
 						
 						 $like=0;
@@ -260,8 +279,27 @@
 					-  <?php echo $count; ?> Likes</span></p>
                      
                      <div class="comments">
-
-
+					  
+					  <div class="form-group editposting <?php echo $row->id_post; ?>" style="padding:10px;">
+					  <?php echo form_open_multipart('Welcome/edit_post'); ?>
+					  <p>
+                        <input type="text" class="form-control" id=<?php echo $row->username; ?> name='edittext' placeholder="change caption here">
+						<div class="btn-toolbar">
+						
+						<input type="hidden" name="idpost" value=<?php echo $row->id_post;?> >
+						<input type="hidden" name="textpast" value=<?php echo $row->text;?> >
+						<input type="hidden" name="postimg" value=<?php echo $row->attach;?> >
+						
+						<input type="file" name="openImage" id="openImage"  style="display:none;" accept="image/*">
+						<button type="button" name="inputImage" id="inputImage" class="btn btn-default"><i class="fa fa-file-image-o"></i>Image</button>
+						<input type="file" name="openVideo" id="openVideo"  style="display:none;" accept="video/*">
+						<button type="button" name="inputVideo" id="inputVideo" class="btn btn-default"><i class="fa fa-file-video-o"></i>Video</button><button style="margin-left:62%;" class="btn btn-default edit submit">Edit</button>
+						</p>
+						</div>
+						  <?php echo form_close(); ?>
+					  </div>
+						
+						
 					 <!-- data di for terus dipilah dengan if milik siapa komen tsb -->
 					 <?php $postnow = $row->id_post; foreach($percomment as $row) { if($row->id_post == $postnow && $row->id_user == $this->session->userdata('myusername') ){ ?>
                        <div class="comment">

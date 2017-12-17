@@ -124,6 +124,14 @@
 			});
 		});
 		
+		$(".postpic").click(function(){
+			//suggested friend
+			var username = $(this).attr('id');			
+			$.post("<?php echo base_url(); ?>"+'index.php/Welcome/otherprofile',{friend:username},function(value){	
+				window.location = "<?php echo base_url(); ?>"+'index.php/Welcome/goto_otherprofile';
+			});
+		});
+		
 		$(".add").click(function(){
 			var idpost = $(this).attr('id');
 			var komen = $("."+idpost).val();
@@ -273,7 +281,6 @@
 			<?php  foreach($friend as $rows){
 				
 			if($row->id_user == $rows[0]->username ){
-				echo $rows[0]->username;
 			?>
 
             <div class="panel panel-default post">
@@ -281,8 +288,15 @@
                  <div class="row">
 				 <?php $posting = $row->id_post; ?>
                    <div class="col-sm-2">
-                     <a href="otherprofile" class="post-avatar thumbnail"><img src=<?php echo base_url("ppicture/".$row->pp);?> alt=""><div class="text-center"><?php echo $row->name ?></div></a>
-                   </div>
+				   
+				   <?php if($rows[0]->username != $this->session->userdata('myusername')){?>
+                     <a href="#" class="post-avatar thumbnail postpic" id=<?php echo$rows[0]->username;?> >
+				   <?php }else{?>
+					<a href="profile" class="post-avatar thumbnail" id=<?php echo$rows[0]->username;?> >
+				   <?php }?>
+					<img src=<?php echo base_url("ppicture/".$row->pp);?> alt=""><div class="text-center"><?php echo $row->name ?></div></a>
+                   
+				   </div>
                    <div class="col-sm-10">
 				   <?php if($row->attach != '0'){?>
 				   <embed src=<?php echo base_url("posts/".$row->attach);?>  autostart="false" loop="false" width="80%" height="450px" controller="true" bgcolor="#333333"></embed>
@@ -361,7 +375,7 @@
 					 <!-- data di for terus dipilah dengan if milik siapa komen tsb -->
 					 <?php foreach($percomment as $rowss) { if($rowss->id_post == $postnow){ ?>
                        <div class="comment">
-                         <a href="otherprofile" class="comment-avatar pull-left"><img src=<?php echo base_url("ppicture/".$rowss->pp);?> alt=""></a>
+                         <a href="#" class="comment-avatar pull-left"><img src=<?php echo base_url("ppicture/".$rowss->pp);?> alt=""></a>
                          <div class="comment-text">
                            <?php echo $rowss->text;?>
 						   <div class='datetime'> at: <?php echo $rowss->date;?> | by: <a href="otherprofile"> <?php echo $rowss->name;?></a> | <a href="#" name=<?php echo $rowss->username;?> id=<?php echo $rowss->id_post;?> class="reply"> Reply</a> </div>

@@ -94,6 +94,33 @@ class Model extends CI_Model {
 		$this->db->update('group_social',$data);
 	}
 	
+	function edit_mypost($idpost,$text,$attach)
+	{
+		$data = array(
+			'text' => $text,
+			'attach' => $attach
+		);
+
+		$this->db->where('id_post',$idpost);
+		$this->db->update('post',$data);
+		
+		$this->db->where("id_post",$idpost);
+		$this->db->delete('disukai');
+		
+		$this->db->where("id_post",$idpost);
+		$this->db->delete('comment');
+	}
+	
+	function logout_status($username)
+	{
+		$data = array(
+			'on' => 0
+		);
+
+		$this->db->where('username',$username);
+		$this->db->update('user',$data);
+	}
+	
 	function add_friend($iduser,$idfriend){
 		$data = array(
 			'id_friend' => $iduser."_".$idfriend,

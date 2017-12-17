@@ -19,6 +19,10 @@ class Welcome extends CI_Controller {
 	public function index()
 	{
 		$this->session->set_userdata('file_name','user.png');
+		if($this->session->userdata('myusername'))
+		{
+			redirect('Welcome/Login_page');
+		}
 		$this->load->view('index');
 	}
 	
@@ -117,6 +121,46 @@ class Welcome extends CI_Controller {
 	{
 		$post = $this->input->post();
 		$this->Model->delete_mypost($post['idpost']);
+	}
+	
+	public function edit_post()
+	{
+		$post = $this->input->post();
+		
+				$config['upload_path']  = './posts/';
+                $config['allowed_types']  = 'jpeg|jpg|png|mp4|mkv|avi|wmv|mov';
+                $config['file_name']  = $_POST['idpost'];
+                $config['overwrite']  = true;
+                $this->load->library('upload',$config);
+			
+				$text = $post['edittext'];
+				if($post['edittext'] == null)
+				{
+					$text = $post['textpast'];
+				}
+				
+		        if ( ! $this->upload->do_upload('openImage'))
+                {		
+					if ( ! $this->upload->do_upload('openVideo'))
+					{		
+						$this->Model->edit_mypost($_POST['idpost'],$text,$post['postimg']);
+						redirect("Welcome/profile");
+					}
+					else
+					{
+						$te = $this->upload->data();
+						$namafile = $te["file_name"];
+						$this->Model->edit_mypost($_POST['idpost'],$text,$namafile);
+						redirect("Welcome/profile");
+					}
+                }
+                else
+                {
+					$te = $this->upload->data();
+					$namafile = $te["file_name"];
+					$this->Model->edit_mypost($_POST['idpost'],$text,$namafile);
+					redirect("Welcome/profile");
+                }
 	}
 	
 	public function register()
@@ -305,17 +349,32 @@ class Welcome extends CI_Controller {
 	
 	public function otherprofile()
 	{
+
 		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
 			
 		//ajax ambil id
 		$post = $this->input->post();
 		
+		
 		$this->session->set_userdata('userfriend',$post["friend"]);
 	}
 	public function goto_otherprofile()
 	{
+		$post = $this->input->post();
 		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
-			
+		
+		$data["friend"]=null;
+		$counter=0;
+		$frienddata = $this->Model->select_user_notme($this->session->userdata('userfriend'));
+		foreach ($frienddata as $row)
+		{
+			$lookfriend = $this->Model->select_friend($row->username,$this->session->userdata('userfriend'));
+			if($lookfriend)
+			{
+				$data["friend"][$counter] = $this->Model->select_user_myfriend($row->username);
+				$counter++;
+			}
+		}	
 		//menuju ke other profile
 		$data['otherprofile'] = $this->Model->get_profile_friend($this->session->userdata('userfriend'));
 		
@@ -329,6 +388,10 @@ class Welcome extends CI_Controller {
 		{
 			$data["isfriend"] = 'req'; 
 		}
+		
+		$data['percomment'] = $this->Model->select_comment();
+		$data['peremo'] = $this->Model->select_emo();
+		$data['allposting'] = $this->Model->select_mypost_friend($this->session->userdata('userfriend'));
 
 		$this->load->view('profile2',$data);
 	}
@@ -819,6 +882,9 @@ class Welcome extends CI_Controller {
 		}
 		else if(isset($_POST['logout'])){
 			$this->load->view('index');
+			$this->Model->logout_status($this->session->userdata('myusername'));
+			$this->session->sess_destroy();
+			
 		}
 		else {
 			$this->load->view('index');
