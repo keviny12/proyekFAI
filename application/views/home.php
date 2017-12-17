@@ -359,12 +359,12 @@
 
 
 					 <!-- data di for terus dipilah dengan if milik siapa komen tsb -->
-					 <?php foreach($percomment as $row) { if($row->id_post == $postnow){ ?>
+					 <?php foreach($percomment as $rowss) { if($rowss->id_post == $postnow){ ?>
                        <div class="comment">
-                         <a href="otherprofile" class="comment-avatar pull-left"><img src=<?php echo base_url("ppicture/".$row->pp);?> alt=""></a>
+                         <a href="otherprofile" class="comment-avatar pull-left"><img src=<?php echo base_url("ppicture/".$rowss->pp);?> alt=""></a>
                          <div class="comment-text">
-                           <?php echo $row->text;?>
-						   <div class='datetime'> at: <?php echo $row->date;?> | by: <a href="otherprofile"> <?php echo $row->name;?></a> | <a href="#" name=<?php echo $row->username;?> id=<?php echo $row->id_post;?> class="reply"> Reply</a> </div>
+                           <?php echo $rowss->text;?>
+						   <div class='datetime'> at: <?php echo $rowss->date;?> | by: <a href="otherprofile"> <?php echo $rowss->name;?></a> | <a href="#" name=<?php echo $rowss->username;?> id=<?php echo $rowss->id_post;?> class="reply"> Reply</a> </div>
                          </div>
                        </div>
                        <div class="clearfix"></div>
