@@ -83,7 +83,8 @@ class Welcome extends CI_Controller {
 	{
 		$data['percomment'] = $this->Model->select_comment();
 		$data['peremo'] = $this->Model->select_emo();
-
+		$data['resultfriend'] = null;
+		$data['textfriends'] = "Sorry, we couldn't find friends with the keyword #".$hashtag;
 		//mencari user yg bukan diri sendiri
 		$lookuser = $this->Model->select_user_notme($this->session->userdata('myusername'));
 		//mencari user aktif yg bukan diri sendiri
@@ -91,12 +92,12 @@ class Welcome extends CI_Controller {
 		$data['allposting'] = $this->Model->select_post_hashtag($hashtag);
 		if ($data['allposting'] == null)
 		{
-			$data["textresults"] = "Sorry, we couldn't find posts with the hashtag #".$hashtag;
+			$data["textresults"] = "Sorry, we couldn't find posts with the keyword #".$hashtag;
 		}
 		else
 		{
 			$tagcount = $this->Model->count_hashtags($hashtag);
-			$data["textresults"] = "Showing ".$tagcount." posts with the hashtag #".$hashtag. " : ";
+			$data["textresults"] = "Showing ".$tagcount." posts with the keyword #".$hashtag. " : ";
 		}
 		//komentar posting
 		$data['percomment'] = $this->Model->select_comment();

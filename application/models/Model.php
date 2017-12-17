@@ -435,20 +435,28 @@ class Model extends CI_Model {
 	}
 	
 	function select_post_hashtag($hashtag){
-		$this->db->select("*");
+		$this->db->select("p.id_post as id_post,p.id_user,p.text,p.attach,p.disukai,p.jum_comment,p.id_group,p.date,
+		u.username,u.name,u.pp,c.id_post as cid_post,c.id_user as cid_user,c.id_reply,c.text as ctext,c.date as cdate");
 		$this->db->from("post p");
 		$this->db->join("user u","u.username = p.id_user");
+		$this->db->join("comment c","c.id_post = p.id_post");
 		$this->db->like("p.text","#".$hashtag);
+		$this->db->or_like("c.text","#".$hashtag);
+		$this->db->group_by("c.id_post");
 		$this->db->order_by('p.id_post', 'desc');
 		$result = $this->db->get();
 		return $result->result();
 	}
 	
 	function count_hashtags($hashtag){
-		$this->db->select("*");
+		$this->db->select("p.id_post as id_post,p.id_user,p.text,p.attach,p.disukai,p.jum_comment,p.id_group,p.date,
+		u.username,u.name,u.pp,c.id_post as cid_post,c.id_user as cid_user,c.id_reply,c.text as ctext,c.date as cdate");
 		$this->db->from("post p");
 		$this->db->join("user u","u.username = p.id_user");
+		$this->db->join("comment c","c.id_post = p.id_post");
 		$this->db->like("p.text","#".$hashtag);
+		$this->db->or_like("c.text","#".$hashtag);
+		$this->db->group_by("c.id_post");
 		$this->db->order_by('p.id_post', 'desc');
 		return $this->db->count_all_results();
 	}

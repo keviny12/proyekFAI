@@ -268,18 +268,18 @@
 					 <?php echo $wow; ?> <img src=<?php echo base_url("emo/wow.png");?> width=20> 
 					 <?php echo $sad; ?> <img src=<?php echo base_url("emo/sad.png");?> width=20> 
 					 <?php echo $angry; ?> <img src=<?php echo base_url("emo/angry.png");?> width=20>
-					-  <?php echo $count; ?> Likes</span></p>
+					 &nbsp;|&nbsp;<?php echo $count; ?> Likes</span></p>
                      
                      <div class="comments">
 
 
 					 <!-- data di for terus dipilah dengan if milik siapa komen tsb -->
-					 <?php $postnow = $row->id_post; foreach($percomment as $row) { if($row->id_post == $postnow && $row->id_user == $this->session->userdata('myusername') ){ ?>
+					 <?php $postnow = $row->id_post; foreach($percomment as $rowss) { if($rowss->id_post == $postnow){ ?>
                        <div class="comment">
-                         <a href="otherprofile" class="comment-avatar pull-left"><img src=<?php echo base_url("ppicture/".$row->pp);?> alt=""></a>
+                         <a href="otherprofile" class="comment-avatar pull-left"><img src=<?php echo base_url("ppicture/".$rowss->pp);?> alt=""></a>
                          <div class="comment-text">
-                           <?php echo $row->text;?>
-						   <div class='datetime'> at: <?php echo $row->date;?> | by: <a href="otherprofile"> <?php echo $row->name;?></a>   </div>
+                           <?php echo $rowss->text;?>
+						   <div class='datetime'> at: <?php echo $rowss->date;?> | by: <a href="otherprofile"> <?php echo $rowss->name;?></a>   </div>
                          </div>
                        </div>
                        <div class="clearfix"></div>
