@@ -74,25 +74,38 @@ class Welcome extends CI_Controller {
 		}
 		else
 		{
+			$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
+			foreach($lookuser as $row)
+			{
+				//mencari user yg bukan teman
+				$friend = $this->Model->select_user_notfriend($row->username,$this->session->userdata('myusername'));
+				
+				if(!$friend)
+				{
+					//ambil data user yang bukan teman
+					$data["alluser"][$count]=$this->Model->select_user_notmyfriend($row->username);
+					$count++;
+				}
+			}
+			
+			$counter=0;
+			$data["friend"]=null;
+			$frienddata = $this->Model->select_alluser();
+			foreach ($frienddata as $row)
+			{
+				$lookfriend = $this->Model->select_friend($row->username,$this->session->userdata('myusername'));
+				if($lookfriend)
+				{
+					$data["friend"][$counter] = $this->Model->select_user_myfriend($row->username);
+					$counter++;
+				}
+			}
+
 			redirect("Welcome/link_home");
 		}
 		
 	}
-	
-<<<<<<< HEAD
-			$count=0;
-			//mencari user yg bukan diri sendiri
-			$lookuser = $this->Model->select_user_notme($this->session->userdata('myusername'));
-			//mencari user aktif yg bukan diri sendiri
-			$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
-			$data['allposting'] = $this->Model->select_post_friend($this->session->userdata('myusername'));
-			//komentar posting
-			$data['percomment'] = $this->Model->select_comment();
-			$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
-			$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
-		
-			foreach($lookuser as $row)
-=======
+
 	public function search_hashtag($hashtag)
 	{
 		$data['percomment'] = $this->Model->select_comment();
@@ -138,7 +151,6 @@ class Welcome extends CI_Controller {
 			$friend = $this->Model->select_user_notfriend($row->username,$this->session->userdata('myusername'));
 			
 			if(!$friend)
->>>>>>> 6f954bac55121d5b8e5556b6541cd7efef1ce508
 			{
 				//ambil data user yang bukan teman
 				$data["alluser"][$count]=$this->Model->select_user_notmyfriend($row->username);
@@ -154,7 +166,6 @@ class Welcome extends CI_Controller {
 			$lookfriend = $this->Model->select_friend($row->username,$this->session->userdata('myusername'));
 			if($lookfriend)
 			{
-<<<<<<< HEAD
 				if($row->username == $this->session->userdata('myusername')){
 					$this->session->set_userdata('profilepict',$row->pp);
 				}
@@ -164,10 +175,8 @@ class Welcome extends CI_Controller {
 					$data["friend"][$counter] = $this->Model->select_user_myfriend($row->username);
 					$counter++;
 				}
-=======
 				$data["friend"][$counter] = $this->Model->select_user_myfriend($row->username);
 				$counter++;
->>>>>>> 6f954bac55121d5b8e5556b6541cd7efef1ce508
 			}
 		}
 
