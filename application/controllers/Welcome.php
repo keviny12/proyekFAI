@@ -108,6 +108,9 @@ class Welcome extends CI_Controller {
 
 	public function search_hashtag($hashtag)
 	{
+		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
+		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
+		
 		$data['percomment'] = $this->Model->select_comment();
 		$data['peremo'] = $this->Model->select_emo();
 		$data['resultfriend'] = null;
@@ -135,7 +138,9 @@ class Welcome extends CI_Controller {
 	{
 		$data['percomment'] = $this->Model->select_comment();
 		$data['peremo'] = $this->Model->select_emo();
-
+		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
+		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
+		
 		$count=0;
 		//mencari user yg bukan diri sendiri
 		$lookuser = $this->Model->select_user_notme($this->session->userdata('myusername'));
