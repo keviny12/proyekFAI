@@ -135,11 +135,25 @@
       <form class="form-inline ">
         <div class="form-group col-sm-offset-4 col-sm-6">
 		  <ul class="nav navbar-nav">
+		    <li> <div class="form-group searchbar">
+              <input type="text" class="form-control" placeholder="search">
+              </div></li>
             <li><a href="login_page">Home</a></li>
-            <li><a href="member" type='button' name='member'>Friends</a></li>
-            <li class="actived"><a href="group">Groups</a></li>
-            <li><a href="photos.php">Photos</a></li>
-            <li class="user"><a href="profile" style="background:none; color:white;"><?php echo $this->session->userdata('myaccount'); ?></a></li>
+            <li><a href="member" type='button' name='member'>Friends
+			<?php if(count($request) < 1){
+			}else if(count($request) > 99){?>
+			<i class="notif"><?php echo '99+';?></i>
+			<?php }else{?>
+			<i class="notif"><?php echo count($request);?></i>
+			<?php }?></a></li>
+            <li class="actived"><a href="group">Groups
+			<?php if(count($group_permission) < 1){
+			}else if(count($group_permission) > 99){?>
+			<i class="notif"><?php echo '99+';?></i>
+			<?php }else{?>
+			<i class="notif"><?php echo count($group_permission);?></i>
+			<?php }?></a></li>
+            <li class="user"><a href="profile" style="background:none; "><img src=<?php echo base_url("ppicture/".$this->session->userdata('profilepict'));?> style="height:50px; 	border-radius:50px;" width=50 alt=""></a></li>
 			<li><button type="submit" name="logout" class="btn btn-default logout">Log out</button></li>
           </ul>
         </div>

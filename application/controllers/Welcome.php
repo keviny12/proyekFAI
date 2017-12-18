@@ -85,7 +85,9 @@ class Welcome extends CI_Controller {
 			$data['allposting'] = $this->Model->select_post_friend($this->session->userdata('myusername'));
 			//komentar posting
 			$data['percomment'] = $this->Model->select_comment();
-			
+			$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
+			$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
+		
 			foreach($lookuser as $row)
 			{
 				//mencari user yg bukan teman
@@ -104,6 +106,9 @@ class Welcome extends CI_Controller {
 			$frienddata = $this->Model->select_alluser();
 			foreach ($frienddata as $row)
 			{
+				if($row->username == $this->session->userdata('myusername')){
+					$this->session->set_userdata('profilepict',$row->pp);
+				}
 				$lookfriend = $this->Model->select_friend($row->username,$this->session->userdata('myusername'));
 				if($lookfriend)
 				{
@@ -317,6 +322,9 @@ class Welcome extends CI_Controller {
 			}
 		}
 		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
+		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
+		
+		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
 		
 		$this->load->view('members',$data);
 	}
@@ -340,7 +348,9 @@ class Welcome extends CI_Controller {
 		
 			//mencari user yg bukan diri sendiri
 		$data['allposting'] = $this->Model->select_mypost_friend($this->session->userdata('myusername'));
-			
+		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
+		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
+		
 		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
 			
 		$data["mydata"] = $this->Model->select_user_byusername($this->session->userdata('myusername'));
@@ -362,6 +372,8 @@ class Welcome extends CI_Controller {
 	{
 		$post = $this->input->post();
 		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
+		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
+		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
 		
 		$data["friend"]=null;
 		$counter=0;
@@ -436,7 +448,9 @@ class Welcome extends CI_Controller {
 		$post = $this->input->post();
 		$data['group'] = $this->Model->select_group_byusername($this->session->userdata('myusername'));
 		$data['group_member'] = $this->Model->select_group_member_byusername($this->session->userdata('myusername'));
+		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
 		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
+		
 		$this->load->view('groups',$data);
 	}
 	
@@ -477,6 +491,8 @@ class Welcome extends CI_Controller {
 	public function goto_group()
 	{
 		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
+		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
+		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
 			
 		//mencari data grup
 		$data['groupmembers'] = $this->Model->select_all_group_members($this->session->userdata('usergroup'));
@@ -500,7 +516,9 @@ class Welcome extends CI_Controller {
 	public function goto_group_member()
 	{
 		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
-			
+		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
+		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
+		
 		//mencari data grup
 		$data['groupmembers'] = $this->Model->select_all_group_members($this->session->userdata('usergroup'));
 		$data['othergroup'] = $this->Model->get_profile_group($this->session->userdata('usergroup'));
@@ -625,7 +643,9 @@ class Welcome extends CI_Controller {
 		//komentar posting
 		$data['percomment'] = $this->Model->select_comment();
 		$data['peremo'] = $this->Model->select_emo();
-	
+		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
+		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
+		
 		
 			//mencari user yg bukan diri sendiri
 			$lookuser = $this->Model->select_user_notme($this->session->userdata('myusername'));
@@ -813,6 +833,8 @@ class Welcome extends CI_Controller {
 	}
 	public function home()
 	{
+		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
+		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
 		
 		$post = $this->input->post();
 		if(isset($_POST['postBTN'])){
