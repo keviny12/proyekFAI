@@ -164,6 +164,7 @@
 		  <ul class="nav navbar-nav">
 		    <li> <div class="form-group searchbar">
               <input type="text" class="form-control" placeholder="search">
+			  <button type="submit" style="border:none;background:none;"><i class="fa fa-search"></i></button></input>
               </div></li>
             <li class="actived"><a href="login">Home</a></li>
             <li><a href="member" type='button' name='member'>Friends
@@ -180,7 +181,7 @@
 			<?php }else{?>
 			<i class="notif"><?php echo count($group_permission);?></i>
 			<?php }?></a></li>
-            <li class="user"><a href="profile" style="background:none; "><img src=<?php echo base_url("ppicture/".$this->session->userdata('profilepict'));?> style="height:50px; 	border-radius:50px;" width=50 alt=""></a></li>
+            <li class="user"><a href="profile" style="background:none; "><img src=<?php echo base_url("ppicture/".$this->session->userdata('profilepict'));?> style="height:50px; border-radius:50px;" width=50 alt=""></a></li>
 			<li><button type="submit" name="logout" class="btn btn-default logout">Log out</button></li>
           </ul>
         </div>
@@ -290,10 +291,9 @@
               </div>
 			  <?php echo form_close(); ?>
             </div>
-			
 			<?php foreach($allposting as $row){?>
-			<?php  foreach($friend as $rows){
-				
+			<?php if ($friend != null) {?>
+			<?php  foreach($friend as $rows){	
 			if($row->id_user == $rows[0]->username ){
 			?>
 
@@ -403,33 +403,40 @@
                  </div>
               </div>
             </div>
-			<?php }}} ?>
+			<?php }}}} ?>
           </div>
           <div class="col-md-4">
             <div class="panel panel-default groups">
               <div class="panel-heading">
-                <h3 class="panel-title">Latest Groups</h3>
+                <h3 class="panel-title">Notifications</h3>
               </div>
               <div class="panel-body">
-                <div class="group-item">
-                  <img src="img/group.png" alt="">
-                  <h4><a href="group_prof" class="">Sample Group One</a></h4>
-                  <p>This is a paragraph of intro text, or whatever I want to call it.</p>
-                </div>
-                <div class="clearfix"></div>
-                <div class="group-item">
-                  <img src="img/group.png" alt="">
-                  <h4><a href="group_prof" class="">Sample Group Two</a></h4>
-                  <p>This is a paragraph of intro text, or whatever I want to call it.</p>
-                </div>
-                <div class="clearfix"></div>
-                <div class="group-item">
-                  <img src="img/group.png" alt="">
-                  <h4><a href="group_prof" class="">Sample Group Three</a></h4>
-                  <p>This is a paragraph of intro text, or whatever I want to call it.</p>
-                </div>
-                <div class="clearfix"></div>
-                <a href="Group" class="btn btn-primary mybutton">View All Groups</a>
+				<?php if ($sidenotif != null) { ?>
+				<?php foreach ($sidenotif as $row) { ?>
+					<div class="group-item">
+					    <img src=<?php echo base_url("ppicture/".$row->pp);?> style="border-radius:50%;width:50px;height:50px;" alt="">
+					    <?php 
+							if ($row->type == "reqfriend")
+							{
+								echo "<p>".$row->name." sent you a friend request.</p>";
+							}
+							else if ($row->type == "accfriend") 
+							{ 
+								echo "<p>".$row->name." accepted your friend request.</p>";
+						    } 
+							else if ($row->type == "reqgroup") 
+							{ 
+								echo "<p>".$row->name." invited you to join the group ".$row->group_name.".</p>";
+							} 
+							else if ($row->type == "accgroup") 
+							{
+								echo "<p>".$row->name." has joined the group ".$row->group_name.".</p>";
+							} 
+						?>
+					  <div class='datetime'><?php echo $row->date; ?></div>
+					</div>
+					<div class="clearfix"></div>
+				<?php }} ?>
               </div>
             </div>
           </div>

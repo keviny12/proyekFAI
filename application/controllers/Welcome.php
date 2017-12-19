@@ -74,35 +74,13 @@ class Welcome extends CI_Controller {
 		}
 		else
 		{
-			$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
-			foreach($lookuser as $row)
-			{
-				//mencari user yg bukan teman
-				$friend = $this->Model->select_user_notfriend($row->username,$this->session->userdata('myusername'));
-				
-				if(!$friend)
-				{
-					//ambil data user yang bukan teman
-					$data["alluser"][$count]=$this->Model->select_user_notmyfriend($row->username);
-					$count++;
-				}
-			}
-			
-			$counter=0;
-			$data["friend"]=null;
-			$frienddata = $this->Model->select_alluser();
-			foreach ($frienddata as $row)
-			{
-				$lookfriend = $this->Model->select_friend($row->username,$this->session->userdata('myusername'));
-				if($lookfriend)
-				{
-					$data["friend"][$counter] = $this->Model->select_user_myfriend($row->username);
-					$counter++;
-				}
-			}
-
-			redirect("Welcome/link_home");
+			redirect("Welcome/Login_page");
 		}
+		
+	}
+	
+	public function search($keyword)
+	{
 		
 	}
 
@@ -134,59 +112,6 @@ class Welcome extends CI_Controller {
 		$this->load->view('explore',$data);
 	}
 	
-	function link_home()
-	{
-		$data['percomment'] = $this->Model->select_comment();
-		$data['peremo'] = $this->Model->select_emo();
-		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
-		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
-		
-		$count=0;
-		//mencari user yg bukan diri sendiri
-		$lookuser = $this->Model->select_user_notme($this->session->userdata('myusername'));
-		//mencari user aktif yg bukan diri sendiri
-		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
-		$data['allposting'] = $this->Model->select_post_friend($this->session->userdata('myusername'));
-		//komentar posting
-		$data['percomment'] = $this->Model->select_comment();
-		
-		foreach($lookuser as $row)
-		{
-			//mencari user yg bukan teman
-			$friend = $this->Model->select_user_notfriend($row->username,$this->session->userdata('myusername'));
-			
-			if(!$friend)
-			{
-				//ambil data user yang bukan teman
-				$data["alluser"][$count]=$this->Model->select_user_notmyfriend($row->username);
-				$count++;
-			}
-		}
-		
-		$counter=0;
-		$data["friend"]=null;
-		$frienddata = $this->Model->select_alluser();
-		foreach ($frienddata as $row)
-		{
-			$lookfriend = $this->Model->select_friend($row->username,$this->session->userdata('myusername'));
-			if($lookfriend)
-			{
-				if($row->username == $this->session->userdata('myusername')){
-					$this->session->set_userdata('profilepict',$row->pp);
-				}
-				$lookfriend = $this->Model->select_friend($row->username,$this->session->userdata('myusername'));
-				if($lookfriend)
-				{
-					$data["friend"][$counter] = $this->Model->select_user_myfriend($row->username);
-					$counter++;
-				}
-				$data["friend"][$counter] = $this->Model->select_user_myfriend($row->username);
-				$counter++;
-			}
-		}
-
-		$this->load->view('home',$data);
-	}
 	
 	public function delete_post()
 	{
@@ -586,7 +511,8 @@ class Welcome extends CI_Controller {
 	public function add_group()
 	{
 		$post = $this->input->post();
-		$this->Model->add_friend_group($this->session->userdata('myusername'),$post["group"]);
+		$admin = $this->Model->get_group_admin($post["group"]);
+		$this->Model->add_friend_group($admin,$this->session->userdata('myusername'),$post["group"]);
 	}
 	
 	public function cancel_group()
@@ -790,13 +716,13 @@ class Welcome extends CI_Controller {
                 }
 				redirect('Welcome/goto_group');
 		}
-		else 	if (isset($_POST['confirmgroupreq']))
+		else if (isset($_POST['confirmgroupreq']))
 		{
 			$idgroup = $post['idgroup'];
 			$allreq = $this->session->userdata("temprequest");
 			foreach($allreq as $row)
 			{
-				$this->Model->insert_request_group($idgroup,$row);
+				$this->Model->insert_request_group($this->session->userdata("myusername"),$idgroup,$row);
 			}
 			$this->session->unset_userdata("temprequest");
 			$this->session->set_flashdata("scsmsg","Your request has been sent.");
@@ -835,6 +761,7 @@ class Welcome extends CI_Controller {
 		$countfriend=0;
 		$data["alluser"]=null;
 		//komentar posting
+		$data['sidenotif'] = $this->Model->select_sidenotif($this->session->userdata('myusername'));
 		$data['percomment'] = $this->Model->select_comment();
 		$data['peremo'] = $this->Model->select_emo();
 		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
@@ -843,7 +770,7 @@ class Welcome extends CI_Controller {
 		
 			//mencari user yg bukan diri sendiri
 			$lookuser = $this->Model->select_user_notme($this->session->userdata('myusername'));
-			$data['allposting'] = $this->Model->select_post_friend();
+			$data['allposting'] = $this->Model->select_post_friend($this->session->userdata('myusername'));
 			
 			$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
 			foreach($lookuser as $row)
@@ -864,6 +791,9 @@ class Welcome extends CI_Controller {
 			$frienddata = $this->Model->select_alluser();
 			foreach ($frienddata as $row)
 			{
+				if($row->username == $this->session->userdata('myusername')){
+					$this->session->set_userdata('profilepict',$row->pp);
+				}
 				$lookfriend = $this->Model->select_friend($row->username,$this->session->userdata('myusername'));
 				if($lookfriend)
 				{

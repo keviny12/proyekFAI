@@ -148,7 +148,7 @@
       <form class="form-inline ">
         <div class="form-group col-sm-offset-4 col-sm-6">
 		  <ul class="nav navbar-nav">
-            <li class="actived"><a href=<?php echo base_url()."/index.php/Welcome/link_home"?>>Home</a></li>
+            <li class="actived"><a href=<?php echo base_url()."/index.php/Welcome/Login_page"?>>Home</a></li>
             <li><a href=<?php echo base_url()."/index.php/Welcome/member"?> type='button' name='member'>Friends</a></li>
             <li><a href=<?php echo base_url()."/index.php/Welcome/group"?>>Groups</a></li>
             <li><a href="photos.php">Photos</a></li>

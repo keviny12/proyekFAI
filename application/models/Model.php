@@ -142,16 +142,46 @@ class Model extends CI_Model {
 		);
 		
 		$this->db->insert('friend',$data);
+		
+		$data = array(
+			'id_user' => $idfriend,
+			'id_subject' => $iduser,
+			'id_group' => "none",
+			'type' => 'accfriend',
+			'status' => 0,
+			'date' => date("Y-m-d h:i:sa")
+		);
+		
+		$this->db->insert("history",$data);
 	}
 	
-	function add_friend_group($iduser,$idgroup){
+	function get_group_admin($idgroup){
+		$this->db->select("id_admin");
+		$this->db->from("group_social");
+		$this->db->where("id_group",$idgroup);	
+		$result = $this->db->get();
+		return $result->row();		
+	}
+	
+	function add_friend_group($idadmin,$iduser,$idgroup){
 		$data = array(
 			'id_group' => $idgroup,
 			'id_user' => $iduser,
-			'date' =>	date("Y-m-d h:i:sa")
+			'date' => date("Y-m-d h:i:sa")
 		);
 		
 		$this->db->insert('group_member',$data);
+		
+		$data = array(
+			'id_user' => $idadmin,
+			'id_subject' => $iduser,
+			'id_group' => $idgroup,
+			'type' => "accgroup",
+			'status' => 0,
+			'date' =>	date("Y-m-d h:i:sa")
+		);
+		
+		$this->db->insert("history",$data);
 		
 		$this->db->select("*");
 		$this->db->from("group_request");
@@ -172,6 +202,17 @@ class Model extends CI_Model {
 		);
 		
 		$this->db->insert('friend_request',$data);
+		
+		$data = array(
+			'id_user' => $idfriend,
+			'id_subject' => $iduser,
+			'id_group' => "none",
+			'type' => "reqfriend",
+			'status' => 0,
+			'date' =>	date("Y-m-d h:i:sa")
+		);
+		
+		$this->db->insert('history',$data);
 	}
 	
 	function get_urutan($kode)
@@ -233,7 +274,7 @@ class Model extends CI_Model {
 		);
 		$this->db->update('user',$data);
 	}
-	function cancel_request($username,$friend){
+	function cancel_request($username,$friend){		
 		$this->db->select("*");
 		$this->db->from("friend_request");
 		$this->db->where("id_requester",$username);
@@ -243,14 +284,25 @@ class Model extends CI_Model {
 		$this->db->where("id_request",$result->row()->id_request);
 		$this->db->delete('friend_request');
 	}
-	function insert_request_group($idgroup,$idrequest){
+	function insert_request_group($iduser,$idgroup,$idrequest){
 		$data = array(
 			'id_group' => $idgroup,
 			'id_requested' => $idrequest,
-			'date' =>	date("Y-m-d h:i:sa")
+			'date' => date("Y-m-d h:i:sa")
 		);
 
 		$this->db->insert('group_request',$data);
+		
+		$data = array(
+			'id_user' => $idrequest,
+			'id_subject' => $iduser,
+			'id_group' => $idgroup,
+			'type' => "reqgroup",
+			'status' => 0,
+			'date' =>	date("Y-m-d h:i:sa")
+		);
+		
+		$this->db->insert('history',$data);
 	}
 	
 	function cancel_request_group($idgroup,$username){
@@ -572,6 +624,16 @@ class Model extends CI_Model {
 		//$query = "select * from user";
 		$this->db->select("*");
 		$this->db->from("disukai");
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function select_sidenotif($username){
+		$this->db->select("*");
+		$this->db->from("history h");
+		$this->db->join("user u","u.username = h.id_subject");
+		//$this->db->join("group_social gs","gs.id_group = h.id_group");
+		$this->db->where("h.id_user",$username);
 		$result = $this->db->get();
 		return $result->result();
 	}
