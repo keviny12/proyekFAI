@@ -512,7 +512,7 @@ class Welcome extends CI_Controller {
 	{
 		$post = $this->input->post();
 		$admin = $this->Model->get_group_admin($post["group"]);
-		$this->Model->add_friend_group($admin,$this->session->userdata('myusername'),$post["group"]);
+		$this->Model->add_friend_group($admin->id_admin,$this->session->userdata('myusername'),$post["group"]);
 	}
 	
 	public function cancel_group()
@@ -761,7 +761,8 @@ class Welcome extends CI_Controller {
 		$countfriend=0;
 		$data["alluser"]=null;
 		//komentar posting
-		$data['sidenotif'] = $this->Model->select_sidenotif($this->session->userdata('myusername'));
+		$data['sidenotif_friend'] = $this->Model->select_sidenotif_friend($this->session->userdata('myusername'));
+		$data['sidenotif_group'] = $this->Model->select_sidenotif_group($this->session->userdata('myusername'));
 		$data['percomment'] = $this->Model->select_comment();
 		$data['peremo'] = $this->Model->select_emo();
 		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));

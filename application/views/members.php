@@ -53,9 +53,7 @@
 			var username = $(this).attr('id');	
 			$.post("<?php echo base_url(); ?>"+'index.php/Welcome/del_friend',{friend:username},function(value){	
 			window.location = "<?php echo base_url(); ?>"+'index.php/Welcome/member';
-			});
-			
-			
+			});		
 		});
 		
 		$(".cancel_req").click(function(){

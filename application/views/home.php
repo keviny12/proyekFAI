@@ -411,8 +411,8 @@
                 <h3 class="panel-title">Notifications</h3>
               </div>
               <div class="panel-body">
-				<?php if ($sidenotif != null) { ?>
-				<?php foreach ($sidenotif as $row) { ?>
+				<?php if ($sidenotif_friend != null) { ?>
+				<?php foreach ($sidenotif_friend as $row) { ?>
 					<div class="group-item">
 					    <img src=<?php echo base_url("ppicture/".$row->pp);?> style="border-radius:50%;width:50px;height:50px;" alt="">
 					    <?php 
@@ -424,7 +424,17 @@
 							{ 
 								echo "<p>".$row->name." accepted your friend request.</p>";
 						    } 
-							else if ($row->type == "reqgroup") 
+						?>
+					  <div class='datetime'><?php echo $row->date; ?></div>
+					</div>
+					<div class="clearfix"></div>
+				<?php }} ?>
+				<?php if ($sidenotif_group != null) { ?>
+				<?php foreach ($sidenotif_group as $row) { ?>
+					<div class="group-item">
+					    <img src=<?php echo base_url("ppicture/".$row->pp);?> style="border-radius:50%;width:50px;height:50px;" alt="">
+					    <?php 
+							if ($row->type == "reqgroup") 
 							{ 
 								echo "<p>".$row->name." invited you to join the group ".$row->group_name.".</p>";
 							} 

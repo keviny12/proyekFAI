@@ -165,23 +165,23 @@ class Model extends CI_Model {
 	
 	function add_friend_group($idadmin,$iduser,$idgroup){
 		$data = array(
+			'id_user' => $idadmin,
+			'id_subject' => $iduser,
+			'id_group' => $idgroup,
+			'type' => "accgroup",
+			'status' => 0,
+			'date' => date("Y-m-d h:i:sa")
+		);
+		
+		$this->db->insert("history",$data);
+		
+		$data = array(
 			'id_group' => $idgroup,
 			'id_user' => $iduser,
 			'date' => date("Y-m-d h:i:sa")
 		);
 		
 		$this->db->insert('group_member',$data);
-		
-		$data = array(
-			'id_user' => $idadmin,
-			'id_subject' => $iduser,
-			'id_group' => $idgroup,
-			'type' => "accgroup",
-			'status' => 0,
-			'date' =>	date("Y-m-d h:i:sa")
-		);
-		
-		$this->db->insert("history",$data);
 		
 		$this->db->select("*");
 		$this->db->from("group_request");
@@ -628,11 +628,21 @@ class Model extends CI_Model {
 		return $result->result();
 	}
 	
-	function select_sidenotif($username){
+	function select_sidenotif_friend($username){
 		$this->db->select("*");
 		$this->db->from("history h");
 		$this->db->join("user u","u.username = h.id_subject");
-		//$this->db->join("group_social gs","gs.id_group = h.id_group");
+		$this->db->where("h.id_group","none");
+		$this->db->where("h.id_user",$username);
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function select_sidenotif_group($username){
+		$this->db->select("*");
+		$this->db->from("history h");
+		$this->db->join("user u","u.username = h.id_subject");
+		$this->db->join("group_social gs","gs.id_group = h.id_group");
 		$this->db->where("h.id_user",$username);
 		$result = $this->db->get();
 		return $result->result();
