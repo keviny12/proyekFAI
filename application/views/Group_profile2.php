@@ -20,6 +20,16 @@
 
 	<script type="text/javascript" src="<?php echo base_url('js/script.js');?>"></script>
 <script type="text/javascript">
+ function setup() {
+					document.getElementById('inputImage').addEventListener('click', openDialog);
+					function openDialog() {
+						document.getElementById('openImage').click();
+					}
+						document.getElementById('inputVideo').addEventListener('click', openDialog2);
+					function openDialog2() {
+						document.getElementById('openVideo').click();
+					}
+				}
 	$(document).ready(function(){
 		$(".contact > .chat").click(function(){
 			//ambil chat dari db
@@ -71,7 +81,7 @@
 		});
 	});
 </script>
-  <body>
+  <body onload="setup()">
  <?php echo form_open_multipart('Welcome/home'); ?>
   <header>
     <div class="container">

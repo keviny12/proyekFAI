@@ -50,6 +50,20 @@ class Model extends CI_Model {
 		$this->db->insert('post',$data);
 	}
 	
+	function insert_post_group($id_user,$caption,$attach,$suka,$jum_comment,$idgroup){
+		$data = array(
+			'id_user' => $id_user,
+			'text' => $caption,
+			'attach' => $attach,
+			'disukai' => $suka,
+			'jum_comment' => $jum_comment,
+			'id_group' => $idgroup,
+			'date' =>	date("Y-m-d h:i:sa")
+		);
+		
+		$this->db->insert('post',$data);
+	}
+	
 	function insert_comment($text,$user,$idpost,$reply){
 		$data = array(
 			'text' => $text,
@@ -429,6 +443,16 @@ class Model extends CI_Model {
 		$this->db->select("*");
 		$this->db->from("post p");
 		$this->db->join("user u","u.username = p.id_user");
+		$this->db->order_by('p.id_post', 'desc');
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function select_post_group($idgroup){
+		$this->db->select("*");
+		$this->db->from("post p");
+		$this->db->join("user u","u.username = p.id_user");
+		$this->db->where('p.id_group', $idgroup);
 		$this->db->order_by('p.id_post', 'desc');
 		$result = $this->db->get();
 		return $result->result();

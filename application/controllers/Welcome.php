@@ -420,6 +420,69 @@ class Welcome extends CI_Controller {
 		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
 			
 		$data["mydata"] = $this->Model->select_user_byusername($this->session->userdata('myusername'));
+		
+		$post = $this->input->post();
+		
+		if(isset($_POST['postBTN'])){
+				$postingan = $post['comment'];
+				preg_match_all('/(#\w+)/', $postingan, $results);
+				foreach ($results[0] as $hashtag)
+				{
+					$postingan = str_replace($hashtag,"<a href='search_hashtag/".trim($hashtag,"#")."'>".$hashtag."</a>",$postingan);
+				}
+				preg_match_all('/(@\w+)/', $postingan, $results);
+				foreach ($results[0] as $mention)
+				{
+					$ownmention = $this->session->userdata("myusername");
+					if (trim($mention,"@") == $ownmention)
+					{
+						$postingan = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$postingan);
+					}
+					else
+					{
+						$allfriends = $this->Model->select_userfriend_notme($this->session->userdata("myusername"));
+						if ($allfriends != null)
+						{	
+							foreach ($allfriends as $row)
+							{	
+								if ($row->username == trim($mention,"@"))
+								{
+									$postingan = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$postingan);
+								}
+							}
+						}
+					}
+				}
+		        $config['upload_path']          = './posts/';
+                $config['allowed_types']        = 'jpeg|jpg|png|mp4|mkv|avi|wmv|mov';
+                $this->load->library('upload', $config);
+			
+						
+		        if ( ! $this->upload->do_upload('openImage'))
+                {		
+					if ( ! $this->upload->do_upload('openVideo'))
+					{		
+						//$this->session->set_flashdata("error",$this->upload->display_errors());
+						if ($post['comment'] != "")
+						{
+							$this->Model->insert_post($this->session->userdata('myusername'),$postingan,0,1,1);
+						}
+					}
+					else
+					{
+						$te = $this->upload->data();
+						$namafile = $te["file_name"];
+						$this->Model->insert_post($this->session->userdata('myusername'),$postingan,$namafile,1,1);
+					}
+                }
+                else
+                {
+					$te = $this->upload->data();
+					$namafile = $te["file_name"];
+					$this->Model->insert_post($this->session->userdata('myusername'),$postingan,$namafile,1,1);
+                }
+		}
+				
 		$this->load->view('profile',$data);
 	}
 	
@@ -559,7 +622,8 @@ class Welcome extends CI_Controller {
 		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
 		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
 		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
-			
+		$data['percomment'] = $this->Model->select_comment();
+		$data['peremo'] = $this->Model->select_emo();
 		//mencari data grup
 		$data['groupmembers'] = $this->Model->select_all_group_members($this->session->userdata('usergroup'));
 		$data['othergroup'] = $this->Model->get_profile_group($this->session->userdata('usergroup'));
@@ -576,8 +640,10 @@ class Welcome extends CI_Controller {
 				$counter++;
 			}
 		}
+		$data['allposting'] = $this->Model->select_post_group($this->session->userdata('usergroup'));
 		$this->load->view('group_profile',$data);
 	}
+
 	
 	public function goto_group_member()
 	{
@@ -646,7 +712,9 @@ class Welcome extends CI_Controller {
 		}
 		if(isset($_POST['back'])){
 			$this->session->unset_userdata('temp_file');
-
+			$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
+			$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
+			
 
 			echo "<script type='text/javascript'>";
 			echo "alert('Cancel')";
@@ -662,7 +730,67 @@ class Welcome extends CI_Controller {
 	public function group_manage()
 	{ //mengelola grup
 		$post = $this->input->post();
-		if (isset($_POST['confirmgroupreq']))
+		if(isset($_POST['postBTN'])){
+				$postingan = $post['comment'];
+				preg_match_all('/(#\w+)/', $postingan, $results);
+				foreach ($results[0] as $hashtag)
+				{
+					$postingan = str_replace($hashtag,"<a href='search_hashtag/".trim($hashtag,"#")."'>".$hashtag."</a>",$postingan);
+				}
+				preg_match_all('/(@\w+)/', $postingan, $results);
+				foreach ($results[0] as $mention)
+				{
+					$ownmention = $this->session->userdata("myusername");
+					if (trim($mention,"@") == $ownmention)
+					{
+						$postingan = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$postingan);
+					}
+					else
+					{
+						$allfriends = $this->Model->select_userfriend_notme($this->session->userdata("myusername"));
+						if ($allfriends != null)
+						{	
+							foreach ($allfriends as $row)
+							{	
+								if ($row->username == trim($mention,"@"))
+								{
+									$postingan = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$postingan);
+								}
+							}
+						}
+					}
+				}
+		        $config['upload_path']          = './posts/';
+                $config['allowed_types']        = 'jpeg|jpg|png|mp4|mkv|avi|wmv|mov';
+                $this->load->library('upload', $config);
+			
+						
+		        if ( ! $this->upload->do_upload('openImage'))
+                {		
+					if ( ! $this->upload->do_upload('openVideo'))
+					{		
+						//$this->session->set_flashdata("error",$this->upload->display_errors());
+						if ($post['comment'] != "")
+						{
+							$this->Model->insert_post_group($this->session->userdata('myusername'),$postingan,0,1,1,$this->session->userdata('usergroup'));
+						}
+					}
+					else
+					{
+						$te = $this->upload->data();
+						$namafile = $te["file_name"];
+						$this->Model->insert_post_group($this->session->userdata('myusername'),$postingan,$namafile,1,1,$this->session->userdata('usergroup'));
+					}
+                }
+                else
+                {
+					$te = $this->upload->data();
+					$namafile = $te["file_name"];
+					$this->Model->insert_post_group($this->session->userdata('myusername'),$postingan,$namafile,1,1,$this->session->userdata('usergroup'));
+                }
+				redirect('Welcome/goto_group');
+		}
+		else 	if (isset($_POST['confirmgroupreq']))
 		{
 			$idgroup = $post['idgroup'];
 			$allreq = $this->session->userdata("temprequest");

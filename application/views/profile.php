@@ -218,10 +218,30 @@
 		  
 		  <?php } ?>
 		    <div class="col-md-8">
-            <div class="panel panel-default">
+              <div class="panel panel-default">
               <div class="panel-heading">
-                <h3 class="panel-title">My Posting</h3>
+                <h3 class="panel-title">Wall</h3>
               </div>
+			  <?php echo form_open_multipart('Welcome/profile'); ?>
+              <div class="panel-body">
+                  <div class="form-group">
+                    <textarea class="form-control" placeholder="Write on the wall" name="comment"></textarea>
+                  </div>
+				     <div class="btn-toolbar">
+					<input type="file" name="openImage" id="openImage"  style="display:none;" accept="image/*">
+                      <button type="button" name="inputImage" id="inputImage" class="btn btn-default"><i class="fa fa-file-image-o"></i>Image</button>
+					<input type="file" name="openVideo" id="openVideo" style="display:none;" accept="video/*">
+                      <button type="button" name="inputVideo" id="inputVideo" class="btn btn-default"><i class="fa fa-file-video-o"></i>Video</button>
+                    </div>
+				 <div class="pull-left">
+					<p><strong><?php echo $this->session->flashdata("error"); ?></strong></p><br>
+				 </div>
+                 <div class="pull-right">
+					 <input type="submit" class="btn btn-default submit" name="postBTN" value="Submit">
+                  </div>
+
+              </div>
+			  <?php echo form_close(); ?>
             </div>
 	
 			<?php foreach($allposting as $row){?>
@@ -242,7 +262,7 @@
                        </div>
                        <div class="pointer-border"></div>
                      </div>
-                     <p class="post-actions"><span class="editmypost reactchoose" id=<?php  echo $row->id_post; ?> >Edit</span> | <a href="profile" class="deletepost" id=<?php echo $row->id_post;?> >Delete</a><span style="margin-left:38%;">
+                     <p class="post-actions"><span class="editmypost reactchoose" id=<?php  echo $row->id_post; ?> >Edit</span> | <a href="profile" class="deletepost" id=<?php echo $row->id_post;?> >Delete</a><span style="margin-left:35%;">
 					 <?php
 						
 						 $like=0;

@@ -16,6 +16,16 @@
     <link href=<?php echo base_url("css/font-awesome.css");?> rel="stylesheet">
  <script type="text/javascript" src="<?php echo base_url('js/jquery.js');?>"></script>
  <script>
+ function setup() {
+					document.getElementById('inputImage').addEventListener('click', openDialog);
+					function openDialog() {
+						document.getElementById('openImage').click();
+					}
+						document.getElementById('inputVideo').addEventListener('click', openDialog2);
+					function openDialog2() {
+						document.getElementById('openVideo').click();
+					}
+				}
  $(document).ready(function(){
 	var friendctr = 0;
 	$("#addmember-ui").hide();
@@ -120,9 +130,26 @@
 			
 			//menambahkan waktu
 		});
+		$('.editposting').slideUp();
+		
+		$(".editmypost").click(function(){
+			var id_post = $(this).attr('id');
+			$('.'+id_post).slideToggle();
+		});
+		
+		$(".deletepost").click(function(){
+			var deletemypost = confirm('Are you sure ?');
+			var id_post = $(this).attr('id');
+			if(deletemypost)
+			{
+				$.post("<?php echo base_url(); ?>"+'index.php/Welcome/delete_post',{idpost:id_post},function(value){				
+					window.location = "<?php echo base_url(); ?>"+'index.php/Welcome/profile';
+				});
+			}
+		});
 	});
 </script>
-  <body>
+ <body onload="setup()">
  <?php echo form_open_multipart('Welcome/home'); ?>
   <header>
     <div class="container">
@@ -134,7 +161,8 @@
               <input type="text" class="form-control" placeholder="search">
               </div></li>
             <li ><a href="login_page">Home</a></li>
-            <li><?php if(count($request) < 1){
+           <li><a href="member" type='button' name='member'>Friends
+			<?php if(count($request) < 1){
 			}else if(count($request) > 99){?>
 			<i class="notif"><?php echo '99+';?></i>
 			<?php }else{?>
@@ -262,28 +290,142 @@
               </div>
               <br><br>
               <div class="row">
-                <div class="col-md-12">
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h3 class="panel-title">Profile Wall</h3>
-                    </div>
-                    <div class="panel-body">
-                      <form>
-                        <div class="form-group">
-                          <textarea class="form-control" placeholder="Write on the wall"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-default submit">Submit</button>
-                        <div class="pull-right">
-                          <div class="btn-toolbar">
-                            <button type="button" class="btn btn-default"><i class="fa fa-pencil"></i>Text</button>
-                            <button type="button" class="btn btn-default"><i class="fa fa-file-image-o"></i>Image</button>
-                            <button type="button" class="btn btn-default"><i class="fa fa-file-video-o"></i>Video</button>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
+               	    <div class="col-md-12">
+              <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Wall</h3>
+              </div>
+              <div class="panel-body">
+                  <div class="form-group">
+                    <textarea class="form-control" placeholder="Write on the wall" name="comment"></textarea>
                   </div>
-                </div>
+				     <div class="btn-toolbar">
+					<input type="file" name="openImage" id="openImage"  style="display:none;" accept="image/*">
+                      <button type="button" name="inputImage" id="inputImage" class="btn btn-default"><i class="fa fa-file-image-o"></i>Image</button>
+					<input type="file" name="openVideo" id="openVideo" style="display:none;" accept="video/*">
+                      <button type="button" name="inputVideo" id="inputVideo" class="btn btn-default"><i class="fa fa-file-video-o"></i>Video</button>
+                    </div>
+				 <div class="pull-left">
+					<p><strong><?php echo $this->session->flashdata("error"); ?></strong></p><br>
+				 </div>
+                 <div class="pull-right">
+					 <input type="submit" class="btn btn-default submit" name="postBTN" value="Submit">
+                  </div>
+
+              </div>
+			  <?php echo form_close(); ?>
+            </div>
+	
+			<?php foreach($allposting as $row){?>
+            <div class="panel panel-default post">
+              <div class="panel-body">
+                 <div class="row">
+				 <?php $posting = $row->id_post; ?>
+                   <div class="col-sm-2">
+                     <a href="otherprofile" class="post-avatar thumbnail"><img src=<?php echo base_url("ppicture/".$row->pp);?> alt=""><div class="text-center"><?php echo $row->name ?></div></a>
+                   </div>
+                   <div class="col-sm-10">
+				   <?php if($row->attach != '0'){?>
+				   <embed src=<?php echo base_url("posts/".$row->attach);?>  autostart="false" loop="false" width="80%" height="450px" controller="true" bgcolor="#333333"></embed>
+				   <?php } ?>
+					 <div class="bubble">
+                       <div class="pointer">
+                         <p><?php echo $row->text ?></p>
+                       </div>
+                       <div class="pointer-border"></div>
+                     </div>
+                     <p class="post-actions"><span class="editmypost reactchoose" id=<?php  echo $row->id_post; ?> >Edit</span> | <a href="profile" class="deletepost" id=<?php echo $row->id_post;?> >Delete</a><span style="margin-left:35%;">
+					 <?php
+						
+						 $like=0;
+						 $love=0;					 
+						 $laugh=0;	
+						 $wow=0;	
+						 $sad=0;
+						 $angry=0;
+						 $count=0;
+						 
+					 foreach($peremo as $rows){
+						 if($rows->id_post ==  $posting)
+						 {
+							if($rows->jenislike == 'like')
+							{
+								$like++;
+							}
+							else if($rows->jenislike == 'love')
+							{
+								$love++;
+							}
+							else if($rows->jenislike == 'laugh')
+							{
+								$laugh++;
+							}
+							else if($rows->jenislike == 'wow')
+							{
+								$wow++;
+							}
+							else if($rows->jenislike == 'sad')
+							{
+								$sad++;
+							}
+							else if($rows->jenislike == 'angry')
+							{
+								$angry++;
+							}
+							$count++;
+						 }
+					 } ?>
+					 
+					 <?php echo $like; ?> <img src=<?php echo base_url("emo/like.png");?> width=20> 
+					 <?php echo $love; ?>  <img src=<?php echo base_url("emo/love.png");?> width=20> 
+					 <?php echo $laugh; ?>  <img src=<?php echo base_url("emo/laugh.png");?> width=20> 
+					 <?php echo $wow; ?> <img src=<?php echo base_url("emo/wow.png");?> width=20> 
+					 <?php echo $sad; ?> <img src=<?php echo base_url("emo/sad.png");?> width=20> 
+					 <?php echo $angry; ?> <img src=<?php echo base_url("emo/angry.png");?> width=20>
+					 &nbsp;|&nbsp;<?php echo $count; ?> Likes</span></p>
+                     
+                     <div class="comments">
+					  
+					  <div class="form-group editposting <?php echo $row->id_post; ?>" style="padding:10px;">
+					  <?php echo form_open_multipart('Welcome/edit_post'); ?>
+					  <p>
+                        <input type="text" class="form-control" id=<?php echo $row->username; ?> name='edittext' placeholder="change caption here">
+						<div class="btn-toolbar">
+						
+						<input type="hidden" name="idpost" value=<?php echo $row->id_post;?> >
+						<input type="hidden" name="textpast" value=<?php echo $row->text;?> >
+						<input type="hidden" name="postimg" value=<?php echo $row->attach;?> >
+						
+						<input type="file" name="openImage" id="openImage"  style="display:none;" accept="image/*">
+						<button type="button" name="inputImage" id="inputImage" class="btn btn-default"><i class="fa fa-file-image-o"></i>Image</button>
+						<input type="file" name="openVideo" id="openVideo"  style="display:none;" accept="video/*">
+						<button type="button" name="inputVideo" id="inputVideo" class="btn btn-default"><i class="fa fa-file-video-o"></i>Video</button><button style="margin-left:62%;" class="btn btn-default edit submit">Edit</button>
+						</p>
+						
+						</div>
+						  <?php echo form_close(); ?>
+					  </div>
+						
+						
+					 <!-- data di for terus dipilah dengan if milik siapa komen tsb -->
+					 <?php $postnow = $row->id_post; foreach($percomment as $rowss) { if($rowss->id_post == $postnow){ ?>
+                       <div class="comment">
+                         <a href="otherprofile" class="comment-avatar pull-left"><img src=<?php echo base_url("ppicture/".$rowss->pp);?> alt=""></a>
+                         <div class="comment-text">
+                           <?php echo $rowss->text;?>
+						   <div class='datetime'> at: <?php echo $rowss->date;?> | by: <a href="otherprofile"> <?php echo $rowss->name;?></a> </div>
+                         </div>
+                       </div>
+                       <div class="clearfix"></div>
+					 <?php }} ?>
+
+                     </div>
+                   </div>
+                 </div>
+              </div>
+            </div>
+		 <?php } ?>
+          </div>
               </div>
             </div>
 		   <?php } ?>
