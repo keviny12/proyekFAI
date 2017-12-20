@@ -44,15 +44,21 @@ class Welcome extends CI_Controller {
 			}
 			else
 			{
-				
-				$mydata = $this->Model->select_user_byusername($id);
-				foreach($mydata as $row)
+				if ($found['active'] == 0)
 				{
-					$myname = explode(" ",$row->name);
+					echo 'Your account has been banned';
 				}
-				$this->session->set_userdata('myaccount',$myname[0]);
-				$this->session->set_userdata('myusername',$id);
-				echo 'success '.$myname[0];
+				else
+				{
+					$mydata = $this->Model->select_user_byusername($id);
+					foreach($mydata as $row)
+					{
+						$myname = explode(" ",$row->name);
+					}
+					$this->session->set_userdata('myaccount',$myname[0]);
+					$this->session->set_userdata('myusername',$id);
+					echo 'success '.$myname[0];
+				}
 			}
 		}
 		
@@ -73,7 +79,7 @@ class Welcome extends CI_Controller {
 			$this->load->view('register');
 		}
 		else if($input['user'] == 'admin' && $input['pass'] == 'admin'){
-			
+			$this->load->view("admin");
 		}
 		else
 		{
@@ -339,6 +345,7 @@ class Welcome extends CI_Controller {
 		$data['allposting'] = $this->Model->select_mypost_friend($this->session->userdata('myusername'));
 		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
 		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
+		$hashtaglist = array();
 		$mentionuserlist = array();
 		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
 			
@@ -360,6 +367,7 @@ class Welcome extends CI_Controller {
 					if (trim($mention,"@") == $ownmention)
 					{
 						$postingan = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$postingan);
+						array_push($hashtaglist,$hashtag);
 					}
 					else
 					{
@@ -386,25 +394,54 @@ class Welcome extends CI_Controller {
                 {		
 					if ( ! $this->upload->do_upload('openVideo'))
 					{		
-						//$this->session->set_flashdata("error",$this->upload->display_errors());
 						if ($post['comment'] != "")
 						{
-							$this->Model->insert_post($this->session->userdata('myusername'),$mentionuserlist,$postingan,0,1,1);
+							$this->Model->insert_post($this->session->userdata('myusername'),$hashtaglist,$mentionuserlist,$postingan,0,1,1);
 						}
 					}
 					else
 					{
 						$te = $this->upload->data();
 						$namafile = $te["file_name"];
-						$this->Model->insert_post($this->session->userdata('myusername'),$mentionuserlist,$postingan,$namafile,1,1);
+						$this->Model->insert_post($this->session->userdata('myusername'),$hashtaglist,$mentionuserlist,$postingan,$namafile,1,1);
 					}
                 }
                 else
                 {
 					$te = $this->upload->data();
 					$namafile = $te["file_name"];
-					$this->Model->insert_post($this->session->userdata('myusername'),$mentionuserlist,$postingan,$namafile,1,1);
+					$this->Model->insert_post($this->session->userdata('myusername'),$hashtaglist,$mentionuserlist,$postingan,$namafile,1,1);
                 }
+		}
+		
+		else if (isset($_POST['savechanges']))
+		{
+			$username = $post['username'];
+			$firstname = $post['editfirstname'];
+			$lastname = $post['editlastname'];
+			$birth = $post['editbirth'];
+			$address = $post['editaddress'];
+			$email = $post['editemail'];
+			$gender = $post['editgender'];
+			$kode = strtoupper(substr($firstname,0,1).substr($lastname,0,1));
+			$urutan = $this->Model->get_urutan($kode) + 1;
+			$config['upload_path'] = './ppicture/';
+			$config['allowed_types'] = 'gif|jpg|png';
+			$config['overwrite']  = true;
+			$config['file_name'] = 'pp_'.$kode.str_pad($urutan,4,"0",STR_PAD_LEFT);
+			$this->load->library('upload', $config);
+			if($this->upload->do_upload('editprofilepicture'))
+			{
+				$te = $this->upload->data();
+				$pp = $te["file_name"];
+				$this->Model->update_user($username,$firstname." ".$lastname,$email,$birth,$address,$gender,$pp);
+				$this->session->set_flashdata("scsmsg","Your changes has been saved successfully.");
+			}
+			else
+			{
+				$this->session->set_flashdata("errmsg",$this->upload->display_errors());
+			}
+			redirect("Welcome/profile");
 		}
 				
 		$this->load->view('profile',$data);
@@ -673,6 +710,7 @@ class Welcome extends CI_Controller {
 	public function group_manage()
 	{ //mengelola grup
 		$post = $this->input->post();
+		$hashtaglist = array();
 		$mentionuserlist = array();
 		if(isset($_POST['postBTN'])){
 				$postingan = $post['comment'];
@@ -680,6 +718,7 @@ class Welcome extends CI_Controller {
 				foreach ($results[0] as $hashtag)
 				{
 					$postingan = str_replace($hashtag,"<a href='search_hashtag/".trim($hashtag,"#")."'>".$hashtag."</a>",$postingan);
+					array_push($hashtaglist,$hashtag);
 				}
 				preg_match_all('/(@\w+)/', $postingan, $results);
 				foreach ($results[0] as $mention)
@@ -714,24 +753,23 @@ class Welcome extends CI_Controller {
                 {		
 					if ( ! $this->upload->do_upload('openVideo'))
 					{		
-						//$this->session->set_flashdata("error",$this->upload->display_errors());
 						if ($post['comment'] != "")
 						{
-							$this->Model->insert_post_group($this->session->userdata('myusername'),$mentionuserlist,$postingan,0,1,1,$this->session->userdata('usergroup'));
+							$this->Model->insert_post_group($this->session->userdata('myusername'),$hashtaglist,$mentionuserlist,$postingan,0,1,1,$this->session->userdata('usergroup'));
 						}
 					}
 					else
 					{
 						$te = $this->upload->data();
 						$namafile = $te["file_name"];
-						$this->Model->insert_post_group($this->session->userdata('myusername'),$mentionuserlist,$postingan,$namafile,1,1,$this->session->userdata('usergroup'));
+						$this->Model->insert_post_group($this->session->userdata('myusername'),$hashtaglist,$mentionuserlist,$postingan,$namafile,1,1,$this->session->userdata('usergroup'));
 					}
                 }
                 else
                 {
 					$te = $this->upload->data();
 					$namafile = $te["file_name"];
-					$this->Model->insert_post_group($this->session->userdata('myusername'),$mentionuserlist,$postingan,$namafile,1,1,$this->session->userdata('usergroup'));
+					$this->Model->insert_post_group($this->session->userdata('myusername'),$hashtaglist,$mentionuserlist,$postingan,$namafile,1,1,$this->session->userdata('usergroup'));
                 }
 				redirect('Welcome/goto_group');
 		}
@@ -828,6 +866,7 @@ class Welcome extends CI_Controller {
 		if($this->session->userdata('myusername') == 'admin')
 		{
 			$data['report'] = $this->Model->select_report();
+			$data['hashtags'] = $this->Model->get_hashtags();
 			$this->load->view('admin',$data);
 		}
 		else
@@ -1001,6 +1040,7 @@ class Welcome extends CI_Controller {
 	{
 		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
 		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
+		$hashtaglist = array();
 		$mentionuserlist = array();
 		$post = $this->input->post();
 		if(isset($_POST['postBTN'])){
@@ -1009,6 +1049,7 @@ class Welcome extends CI_Controller {
 				foreach ($results[0] as $hashtag)
 				{
 					$postingan = str_replace($hashtag,"<a href='search_hashtag/".trim($hashtag,"#")."'>".$hashtag."</a>",$postingan);
+					array_push($hashtaglist,$hashtag);
 				}
 				preg_match_all('/(@\w+)/', $postingan, $results);
 				foreach ($results[0] as $mention)
@@ -1034,8 +1075,8 @@ class Welcome extends CI_Controller {
 						}
 					}
 				}
-		        $config['upload_path']          = './posts/';
-                $config['allowed_types']        = 'jpeg|jpg|png|mp4|mkv|avi|wmv|mov';
+		        $config['upload_path'] = './posts/';
+                $config['allowed_types'] = 'jpeg|jpg|png|mp4|mkv|avi|wmv|mov';
                 $this->load->library('upload', $config);
 			
 						
@@ -1043,10 +1084,9 @@ class Welcome extends CI_Controller {
                 {		
 					if ( ! $this->upload->do_upload('openVideo'))
 					{		
-						$this->session->set_flashdata("error",$this->upload->display_errors());
 						if ($post['comment'] != "")
 						{
-							$this->Model->insert_post($this->session->userdata('myusername'),$mentionuserlist,$postingan,0,1,1);
+							$this->Model->insert_post($this->session->userdata('myusername'),$hashtaglist,$mentionuserlist,$postingan,0,1,1);
 						}
 						redirect('Welcome/login_page');
 					}
@@ -1054,7 +1094,7 @@ class Welcome extends CI_Controller {
 					{
 						$te = $this->upload->data();
 						$namafile = $te["file_name"];
-						$this->Model->insert_post($this->session->userdata('myusername'),$mentionuserlist,$postingan,$namafile,1,1);
+						$this->Model->insert_post($this->session->userdata('myusername'),$hashtaglist,$mentionuserlist,$postingan,$namafile,1,1);
 						redirect('Welcome/login_page');
 					}
                 }
@@ -1062,7 +1102,7 @@ class Welcome extends CI_Controller {
                 {
 					$te = $this->upload->data();
 					$namafile = $te["file_name"];
-					$this->Model->insert_post($this->session->userdata('myusername'),$mentionuserlist,$postingan,$namafile,1,1);
+					$this->Model->insert_post($this->session->userdata('myusername'),$hashtaglist,$mentionuserlist,$postingan,$namafile,1,1);
 
 					redirect('Welcome/login_page');
                 }

@@ -15,6 +15,10 @@
     <link href=<?php echo base_url("css/style.css");?> rel="stylesheet">
     <link href=<?php echo base_url("css/font-awesome.css");?> rel="stylesheet">
   	<script type="text/javascript" src="<?php echo base_url('js/jquery.js');?>"></script>
+	<script src="<?php echo base_url('js/Chart.js');?>"></script>
+	<script>
+		var myChart = new Chart(ctx, {...});
+	</script>
   </head>
 	
 
@@ -176,25 +180,47 @@
           <div class="col-md-8">
             <div class="groups">
               <h1 class="page-header">Administrator</h1>
-              
-			  <?php foreach($group as $row){?>
-			  <div class="group-item group-now">
-                <img src=<?php echo base_url("gpicture/".$row->group_img);?> width=150 height=150 alt="">
-                <h4><a href="#"><?php echo $row->group_name;?></a></h4>
-                <p><?php echo $row->caption;?>
-					
-					<div class="col-md-3">
-							<p><a href="#" id=<?php echo $row->id_group; ?> class="btn btn-primary mybuttonprof btn-block group-prof"><i class="fa fa-edit"></i> View Profile</a></p>
-					</div>
-					
-					<div class="col-md-3">
-							<p><a href="#" id=<?php echo $row->id_group; ?> style="margin-top:35px;" class="btn btn-danger btn-block exit-group-admin"><i class="fa fa-close"></i> Exit from Group</a></p>
-					</div>
-				  
-                </p>
-              </div>
-			  <?php }?>
-              <div class="clearfix"></div>
+				<p><strong style="font-size:16pt;">User Chart</strong></p><br>
+				<canvas id="myChart" width="400" height="400"></canvas>
+				<script>
+					var ctx = document.getElementById("myChart");
+					var myChart = new Chart(ctx, {
+						type: 'line',
+						data: {
+							labels: ["January","February","March","April","May","June","July","September","October","November","December"],
+							datasets: [{
+								label: 'Registered users',
+								data: [1, 1, 1, 1, 1, 1, 1, 1, 15, 28, 42],
+								backgroundColor: [
+									'rgba(255, 99, 132, 0.2)',
+									'rgba(54, 162, 235, 0.2)',
+									'rgba(255, 206, 86, 0.2)',
+									'rgba(75, 192, 192, 0.2)',
+									'rgba(153, 102, 255, 0.2)',
+									'rgba(255, 159, 64, 0.2)'
+								],
+								borderColor: [
+									'rgba(255,99,132,1)',
+									'rgba(54, 162, 235, 1)',
+									'rgba(255, 206, 86, 1)',
+									'rgba(75, 192, 192, 1)',
+									'rgba(153, 102, 255, 1)',
+									'rgba(255, 159, 64, 1)'
+								],
+								borderWidth: 1
+							}]
+						},
+						options: {
+							scales: {
+								yAxes: [{
+									ticks: {
+										beginAtZero:true
+									}
+								}]
+							}
+						}
+					});
+				</script>
             </div>
 			
           </div>

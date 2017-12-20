@@ -266,11 +266,11 @@
 
 					<?php if($alluser != null){
             echo "<ul>";
-            foreach($alluser as $row){ ?>
-
+            foreach($alluser as $row){ 
+			if ($row[0]->username != "admin") {?>
 
 						<li class="otherfriend" id="<?php echo $row[0]->username ?>"><a class="thumbnail"><img src=<?php echo base_url("ppicture/".$row[0]->pp);?> style="width:100px; height:100px;" alt=""></a></li>
-					<?php }
+					<?php }}
 					echo '<li><a class="btn btn-primary mybutton" href="#"> More Suggested > </a></li>';
 
           echo "</ul>";}

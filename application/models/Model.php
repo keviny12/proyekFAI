@@ -36,7 +36,7 @@ class Model extends CI_Model {
 		$this->db->insert('chat',$data);
 	}
 	
-	function insert_post($id_user,$id_mention,$caption,$attach,$suka,$jum_comment){
+	function insert_post($id_user,$hashtagtext,$id_mention,$caption,$attach,$suka,$jum_comment){
 		$data = array(
 			'id_user' => $id_user,
 			'text' => $caption,
@@ -66,6 +66,39 @@ class Model extends CI_Model {
 				$this->db->insert('history',$data);
 			}
 		}
+		
+		if ($hashtagtext != null)
+		{
+			foreach($hashtagtext as $row)
+			{
+				$this->db->select("*");
+				$this->db->from("hashtag");
+				$this->db->where("hashtag_text",$row);
+				$jumlah= $this->db->get()->row()->jumlah;
+				if ($this->db->count_all_results() == 0)
+				{
+					$data = array(
+						"hashtag_text" => $row,
+						"jumlah" => 1
+					);
+					$this->db->insert("hashtag",$data);
+				}
+				else
+				{
+					$data = array("jumlah" => $jumlah + 1);
+					$this->db->where("hashtag_text",$row);
+					$this->db->update("hashtag",$data);
+				}
+			}
+		}
+	}
+	
+	function get_hashtags()
+	{
+		$this->db->select("*");
+		$this->db->from("hashtag");
+		$result = $this->db->get();
+		return $result->result_array();
 	}
 	
 	function insert_post_group($id_user,$id_mention,$caption,$attach,$suka,$jum_comment,$idgroup){
@@ -313,6 +346,20 @@ class Model extends CI_Model {
 			'status' =>1
 		);
 		$this->db->update('history',$data);
+	}
+	
+	function update_user($username,$name,$email,$birth,$address,$gender,$pp)
+	{
+		$this->db->where("username",$username);
+		$data = array(
+			'name' => $name,
+			'email' => $email,
+			'birth' => $birth,
+			'alamat' => $address,
+			'gender' => $gender,
+			'pp' => $pp
+		);
+		$this->db->update('user',$data);
 	}
 	
 	function update_user_password($username,$pass,$cpass){
@@ -666,7 +713,7 @@ class Model extends CI_Model {
 	}
 	
 	function cek_login($id){
-		$this->db->select("password");
+		$this->db->select("password,active");
 		$this->db->from("user");
 		$this->db->where("username",$id);
 		$result = $this->db->get();

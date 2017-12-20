@@ -202,7 +202,7 @@
                     <tr><td><strong>Birth of Date </td><td> : </strong><?php echo $row->birth; ?></td></tr>
                     <tr><td><strong>Address </td><td> : </strong><?php echo $row->alamat; ?></td></tr>
                     <tr><td><strong>Email </td><td> : </strong><?php echo $row->email; ?></td></tr>
-                    <tr><td><strong>Sex </td><td> : </strong><?php echo $row->gender; ?></td></tr>
+                    <tr><td><strong>Gender </td><td> : </strong><?php echo $row->gender; ?></td></tr>
                   </table>
 				  <br>
 				  <button type="submit" id=<?php echo $row->username; ?> class="btn btn-default submit">Add Friend</button>

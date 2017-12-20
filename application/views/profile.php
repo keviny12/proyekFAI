@@ -15,6 +15,14 @@
     <link href=<?php echo base_url("css/style.css");?> rel="stylesheet">
     <link href=<?php echo base_url("css/font-awesome.css");?> rel="stylesheet">
   	<script type="text/javascript" src="<?php echo base_url('js/jquery.js');?>"></script>
+	<script>
+	$(document).ready(function(){
+		$("#changeprofile-ui").hide();
+		$("#btn-changeprofile").click(function(){
+		  $("#changeprofile-ui").show();
+		});
+	});
+	</script>
   </head>
 	
 
@@ -185,7 +193,7 @@
 	</div>
     <nav class="navbar navbar-default">
     </nav>
-
+	<?php echo form_open_multipart('Welcome/profile'); ?>
     <section>
       <div class="container">
         <div class="row">
@@ -203,13 +211,14 @@
                   <table>
                     <tr><td><strong>First Name </td><td> : </strong><?php $name = explode(" ",$row->name); echo $name[0]; ?></td></tr>
                     <tr><td><strong>Last Name </td><td> : </strong><?php echo $name[1]; ?></td></tr>
-                    <tr><td><strong>Birth of Date </td><td> : </strong><?php echo $row->birth; ?></td></tr>
+                    <tr><td><strong>Birth Date </td><td> : </strong><?php echo $row->birth; ?></td></tr>
                     <tr><td><strong>Address </td><td> : </strong><?php echo $row->alamat; ?></td></tr>
-                    <tr><td><strong>Telephone </td><td> : </strong><?php echo $row->email; ?></td></tr>
-                    <tr><td><strong>Sex </td><td> : </strong><?php echo $row->gender; ?></td></tr>
+                    <tr><td><strong>Email </td><td> : </strong><?php echo $row->email; ?></td></tr>
+                    <tr><td><strong>Gender </td><td> : </strong><?php echo $row->gender; ?></td></tr>
+					<?php echo form_hidden("username",$row->username); ?>
                   </table>
 				  <br>
-				  <button type="submit" class="btn btn-default submit">Change Profile</button>
+				  <button id="btn-changeprofile" type="button" class="btn btn-default submit">Change Profile</button>
                      
                 </div>
               </div>
@@ -219,12 +228,31 @@
           </div>
 		  
 		  <?php } ?>
+		  <div class="row" id="successmsg">
+                <div class="col-md-8"><strong><?php echo $this->session->flashdata("scsmsg");?></strong></div>
+              </div>
+			<div class="row" id="changeprofile-ui">
+                <div class="col-md-8">
+                  <strong style="font-size: 16pt">Edit Profile</strong><br><br>
+                  <?php foreach ($mydata as $row) { ?>
+                  <strong>Profile Picture</strong><hr style="margin-top:2%;"><?php echo form_upload("editprofilepicture","class='form-control'"); ?><br><br>
+                  <strong>First Name</strong><hr style="margin-top:2%;"><?php $name = explode(" ",$row->name); echo form_input("editfirstname",$name[0],"class='form-control'"); ?><br><br>
+                  <strong>Last Name</strong><hr style="margin-top:2%;"><?php echo form_input("editlastname",$name[1],"class='form-control'"); ?><br><br>
+                  <strong>Birth Date</strong><hr style="margin-top:2%;"><?php echo form_input("editbirth",$row->birth,"class='form-control'"); ?><br><br>
+                  <strong>Address</strong><hr style="margin-top:2%;"><?php echo form_input("editaddress",$row->alamat,"class='form-control'"); ?><br><br>
+                  <strong>Email</strong><hr style="margin-top:2%;"><?php echo form_input("editemail",$row->email,"class='form-control'"); ?><br><br>
+                  <strong>Gender</strong><hr style="margin-top:2%;"><?php echo form_input("editgender",$row->gender,"class='form-control'"); ?><br><br>
+                  <div id="errmsg"><strong><?php echo $this->session->flashdata("errmsg");?></strong></div><br>
+                  <button name="savechanges" type="submit" class="btn btn-default submit">Save Changes</button>
+                  <?php }?>
+
+                </div>
+              </div><br><br>
 		    <div class="col-md-8">
               <div class="panel panel-default">
               <div class="panel-heading">
                 <h3 class="panel-title">Wall</h3>
               </div>
-			  <?php echo form_open_multipart('Welcome/profile'); ?>
               <div class="panel-body">
                   <div class="form-group">
                     <textarea class="form-control" placeholder="Write on the wall" name="comment"></textarea>

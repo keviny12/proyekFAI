@@ -202,9 +202,9 @@
               <div class="panel-body friends">
 			  Do you know them ?
                 <ul>
-                  <?php if($alluser != null){foreach($alluser as $row){ ?>
+                  <?php if($alluser != null){foreach($alluser as $row){ if ($row[0]->username != "admin") {?>
 						<li class="otherfriend" id="<?php echo $row[0]->username ?>"><a class="thumbnail"><img src=<?php echo base_url("ppicture/".$row[0]->pp);?> style="height:100px;"alt=""></a></li>
-				  <?php }
+				  <?php }}
 				  echo '<li><a class="btn btn-primary mybutton" href="#"> More Suggested > </a></li>';
 				}?>
                      </ul>
