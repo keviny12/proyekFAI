@@ -36,7 +36,7 @@ class Model extends CI_Model {
 		$this->db->insert('chat',$data);
 	}
 	
-	function insert_post($id_user,$caption,$attach,$suka,$jum_comment){
+	function insert_post($id_user,$id_mention,$caption,$attach,$suka,$jum_comment){
 		$data = array(
 			'id_user' => $id_user,
 			'text' => $caption,
@@ -47,10 +47,28 @@ class Model extends CI_Model {
 			'date' =>	date("Y-m-d h:i:sa")
 		);
 		
+		
+		
 		$this->db->insert('post',$data);
+		
+		if ($id_mention != null)
+		{
+			foreach($id_mention as $row)
+			{
+				$data = array(
+					'id_user' => $row,
+					'id_subject' => $id_user,
+					'id_group' => "none",
+					'type' => "mention",
+					'status' => 0,
+					'date' => date("Y-m-d h:i:sa")
+				);
+				$this->db->insert('history',$data);
+			}
+		}
 	}
 	
-	function insert_post_group($id_user,$caption,$attach,$suka,$jum_comment,$idgroup){
+	function insert_post_group($id_user,$id_mention,$caption,$attach,$suka,$jum_comment,$idgroup){
 		$data = array(
 			'id_user' => $id_user,
 			'text' => $caption,
@@ -62,6 +80,22 @@ class Model extends CI_Model {
 		);
 		
 		$this->db->insert('post',$data);
+		
+		if ($id_mention != null)
+		{
+			foreach($id_mention as $row)
+			{
+				$data = array(
+					'id_user' => $row,
+					'id_subject' => $id_user,
+					'id_group' => $idgroup,
+					'type' => "mentiongroup",
+					'status' => 0,
+					'date' => date("Y-m-d h:i:sa")
+				);
+				$this->db->insert('history',$data);
+			}
+		}
 	}
 	
 	function insert_comment($text,$user,$idpost,$reply){
@@ -273,6 +307,13 @@ class Model extends CI_Model {
 		return $result->result();
 	}
 	
+		
+	function update_status_notif(){
+		$data = array(
+			'status' =>1
+		);
+		$this->db->update('history',$data);
+	}
 	
 	function update_user_password($username,$pass,$cpass){
 		//$query = "update user set password = '".$pass."',confirmpassword = '".$cpass."' where username = '".$username."'";
@@ -551,15 +592,53 @@ class Model extends CI_Model {
 		return $result->result();
 	}
 	
-	function select_post_hashtag($hashtag){
+	function select_friend_search($keyword){
+		$this->db->select("*");
+		$this->db->from("user");
+		$this->db->like("username",$keyword);
+		$this->db->or_like("name",$keyword);
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function count_friends_search($keyword){
+		$this->db->select("*");
+		$this->db->from("user");
+		$this->db->like("username",$keyword);
+		$this->db->or_like("name",$keyword);
+		return $this->db->count_all_results();
+	}
+	
+	function select_post_search($keyword){
 		$this->db->select("p.id_post as id_post,p.id_user,p.text,p.attach,p.disukai,p.jum_comment,p.id_group,p.date,
-		u.username,u.name,u.pp,c.id_post as cid_post,c.id_user as cid_user,c.id_reply,c.text as ctext,c.date as cdate");
+		u.username,u.name,u.pp");
 		$this->db->from("post p");
 		$this->db->join("user u","u.username = p.id_user");
-		$this->db->join("comment c","c.id_post = p.id_post");
+		$this->db->like("p.text",$keyword);
+		$this->db->group_by("p.id_post");
+		$this->db->order_by('p.id_post', 'desc');
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function count_posts_search($keyword){
+		$this->db->select("p.id_post as id_post,p.id_user,p.text,p.attach,p.disukai,p.jum_comment,p.id_group,p.date,
+		u.username,u.name,u.pp");
+		$this->db->from("post p");
+		$this->db->join("user u","u.username = p.id_user");
+		$this->db->like("p.text",$keyword);
+		$this->db->group_by("p.id_post");
+		$this->db->order_by('p.id_post', 'desc');
+		return $this->db->count_all_results();
+	}
+	
+	function select_post_hashtag($hashtag){
+		$this->db->select("p.id_post as id_post,p.id_user,p.text,p.attach,p.disukai,p.jum_comment,p.id_group,p.date,
+		u.username,u.name,u.pp");
+		$this->db->from("post p");
+		$this->db->join("user u","u.username = p.id_user");
 		$this->db->like("p.text","#".$hashtag);
-		$this->db->or_like("c.text","#".$hashtag);
-		$this->db->group_by("c.id_post");
+		$this->db->group_by("p.id_post");
 		$this->db->order_by('p.id_post', 'desc');
 		$result = $this->db->get();
 		return $result->result();
@@ -567,13 +646,11 @@ class Model extends CI_Model {
 	
 	function count_hashtags($hashtag){
 		$this->db->select("p.id_post as id_post,p.id_user,p.text,p.attach,p.disukai,p.jum_comment,p.id_group,p.date,
-		u.username,u.name,u.pp,c.id_post as cid_post,c.id_user as cid_user,c.id_reply,c.text as ctext,c.date as cdate");
+		u.username,u.name,u.pp");
 		$this->db->from("post p");
 		$this->db->join("user u","u.username = p.id_user");
-		$this->db->join("comment c","c.id_post = p.id_post");
 		$this->db->like("p.text","#".$hashtag);
-		$this->db->or_like("c.text","#".$hashtag);
-		$this->db->group_by("c.id_post");
+		$this->db->group_by("p.id_post");
 		$this->db->order_by('p.id_post', 'desc');
 		return $this->db->count_all_results();
 	}
@@ -679,6 +756,7 @@ class Model extends CI_Model {
 		$result = $this->db->get();
 		return $result->result();
 	}
+
 	
 	function select_sidenotif_friend($username){
 		$this->db->select("*");
@@ -690,12 +768,34 @@ class Model extends CI_Model {
 		return $result->result();
 	}
 	
+	function count_select_sidenotif_friend($username){
+		$this->db->select("*");
+		$this->db->from("history h");
+		$this->db->join("user u","u.username = h.id_subject");
+		$this->db->where("h.id_group","none");
+		$this->db->where("h.id_user",$username);
+		$this->db->where("h.status",0);
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
 	function select_sidenotif_group($username){
 		$this->db->select("*");
 		$this->db->from("history h");
 		$this->db->join("user u","u.username = h.id_subject");
 		$this->db->join("group_social gs","gs.id_group = h.id_group");
 		$this->db->where("h.id_user",$username);
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function count_select_sidenotif_group($username){
+		$this->db->select("*");
+		$this->db->from("history h");
+		$this->db->join("user u","u.username = h.id_subject");
+		$this->db->join("group_social gs","gs.id_group = h.id_group");
+		$this->db->where("h.id_user",$username);
+		$this->db->where("h.status",0);
 		$result = $this->db->get();
 		return $result->result();
 	}

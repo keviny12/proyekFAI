@@ -81,11 +81,6 @@ class Welcome extends CI_Controller {
 		}
 		
 	}
-	
-	public function search($keyword)
-	{
-		
-	}
 
 	public function search_hashtag($hashtag)
 	{
@@ -95,7 +90,7 @@ class Welcome extends CI_Controller {
 		$data['percomment'] = $this->Model->select_comment();
 		$data['peremo'] = $this->Model->select_emo();
 		$data['resultfriend'] = null;
-		$data['textfriends'] = "Sorry, we couldn't find friends with the keyword #".$hashtag;
+		$data['textfriends'] = "Sorry, we couldn't find users with the keyword #".$hashtag;
 		//mencari user yg bukan diri sendiri
 		$lookuser = $this->Model->select_user_notme($this->session->userdata('myusername'));
 		//mencari user aktif yg bukan diri sendiri
@@ -103,7 +98,7 @@ class Welcome extends CI_Controller {
 		$data['allposting'] = $this->Model->select_post_hashtag($hashtag);
 		if ($data['allposting'] == null)
 		{
-			$data["textresults"] = "Sorry, we couldn't find posts with the keyword #".$hashtag;
+			$data["textresults"] = "Sorry, we couldn't find posts with the keyword #".$hashtag;	
 		}
 		else
 		{
@@ -344,7 +339,7 @@ class Welcome extends CI_Controller {
 		$data['allposting'] = $this->Model->select_mypost_friend($this->session->userdata('myusername'));
 		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
 		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
-		
+		$mentionuserlist = array();
 		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
 			
 		$data["mydata"] = $this->Model->select_user_byusername($this->session->userdata('myusername'));
@@ -376,6 +371,7 @@ class Welcome extends CI_Controller {
 								if ($row->username == trim($mention,"@"))
 								{
 									$postingan = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$postingan);
+									array_push($mentionuserlist, trim($mention,"@"));
 								}
 							}
 						}
@@ -393,21 +389,21 @@ class Welcome extends CI_Controller {
 						//$this->session->set_flashdata("error",$this->upload->display_errors());
 						if ($post['comment'] != "")
 						{
-							$this->Model->insert_post($this->session->userdata('myusername'),$postingan,0,1,1);
+							$this->Model->insert_post($this->session->userdata('myusername'),$mentionuserlist,$postingan,0,1,1);
 						}
 					}
 					else
 					{
 						$te = $this->upload->data();
 						$namafile = $te["file_name"];
-						$this->Model->insert_post($this->session->userdata('myusername'),$postingan,$namafile,1,1);
+						$this->Model->insert_post($this->session->userdata('myusername'),$mentionuserlist,$postingan,$namafile,1,1);
 					}
                 }
                 else
                 {
 					$te = $this->upload->data();
 					$namafile = $te["file_name"];
-					$this->Model->insert_post($this->session->userdata('myusername'),$postingan,$namafile,1,1);
+					$this->Model->insert_post($this->session->userdata('myusername'),$mentionuserlist,$postingan,$namafile,1,1);
                 }
 		}
 				
@@ -677,6 +673,7 @@ class Welcome extends CI_Controller {
 	public function group_manage()
 	{ //mengelola grup
 		$post = $this->input->post();
+		$mentionuserlist = array();
 		if(isset($_POST['postBTN'])){
 				$postingan = $post['comment'];
 				preg_match_all('/(#\w+)/', $postingan, $results);
@@ -702,6 +699,7 @@ class Welcome extends CI_Controller {
 								if ($row->username == trim($mention,"@"))
 								{
 									$postingan = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$postingan);
+									array_push($mentionuserlist, trim($mention,"@"));
 								}
 							}
 						}
@@ -719,21 +717,21 @@ class Welcome extends CI_Controller {
 						//$this->session->set_flashdata("error",$this->upload->display_errors());
 						if ($post['comment'] != "")
 						{
-							$this->Model->insert_post_group($this->session->userdata('myusername'),$postingan,0,1,1,$this->session->userdata('usergroup'));
+							$this->Model->insert_post_group($this->session->userdata('myusername'),$mentionuserlist,$postingan,0,1,1,$this->session->userdata('usergroup'));
 						}
 					}
 					else
 					{
 						$te = $this->upload->data();
 						$namafile = $te["file_name"];
-						$this->Model->insert_post_group($this->session->userdata('myusername'),$postingan,$namafile,1,1,$this->session->userdata('usergroup'));
+						$this->Model->insert_post_group($this->session->userdata('myusername'),$mentionuserlist,$postingan,$namafile,1,1,$this->session->userdata('usergroup'));
 					}
                 }
                 else
                 {
 					$te = $this->upload->data();
 					$namafile = $te["file_name"];
-					$this->Model->insert_post_group($this->session->userdata('myusername'),$postingan,$namafile,1,1,$this->session->userdata('usergroup'));
+					$this->Model->insert_post_group($this->session->userdata('myusername'),$mentionuserlist,$postingan,$namafile,1,1,$this->session->userdata('usergroup'));
                 }
 				redirect('Welcome/goto_group');
 		}
@@ -783,7 +781,9 @@ class Welcome extends CI_Controller {
 		$data["alluser"]=null;
 		//komentar posting
 		$data['sidenotif_friend'] = $this->Model->select_sidenotif_friend($this->session->userdata('myusername'));
+		$data['count_sidenotif_friend'] = $this->Model->count_select_sidenotif_friend($this->session->userdata('myusername'));
 		$data['sidenotif_group'] = $this->Model->select_sidenotif_group($this->session->userdata('myusername'));
+		$data['count_sidenotif_group'] = $this->Model->count_select_sidenotif_group($this->session->userdata('myusername'));
 		$data['percomment'] = $this->Model->select_comment();
 		$data['peremo'] = $this->Model->select_emo();
 		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
@@ -824,6 +824,7 @@ class Welcome extends CI_Controller {
 				}
 			}
 		$post = $this->input->post();
+		
 		if($this->session->userdata('myusername') == 'admin')
 		{
 			$data['report'] = $this->Model->select_report();
@@ -971,6 +972,11 @@ class Welcome extends CI_Controller {
 		$this->Model->insert_comment($komentar,$this->session->userdata('myusername'),$post["simpanpost"],$post["simpanreply"]);		
 	}
 	
+	public function read_notif()
+	{
+		$this->Model->update_status_notif();
+		redirect('Welcome/login_page');
+	}
 	public function goto_mention($usermention)
 	{
 		if ($usermention == $this->session->userdata("myusername"))
@@ -995,7 +1001,7 @@ class Welcome extends CI_Controller {
 	{
 		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
 		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
-		
+		$mentionuserlist = array();
 		$post = $this->input->post();
 		if(isset($_POST['postBTN'])){
 				$postingan = $post['comment'];
@@ -1022,6 +1028,7 @@ class Welcome extends CI_Controller {
 								if ($row->username == trim($mention,"@"))
 								{
 									$postingan = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$postingan);
+									array_push($mentionuserlist, trim($mention,"@"));
 								}
 							}
 						}
@@ -1039,7 +1046,7 @@ class Welcome extends CI_Controller {
 						$this->session->set_flashdata("error",$this->upload->display_errors());
 						if ($post['comment'] != "")
 						{
-							$this->Model->insert_post($this->session->userdata('myusername'),$postingan,0,1,1);
+							$this->Model->insert_post($this->session->userdata('myusername'),$mentionuserlist,$postingan,0,1,1);
 						}
 						redirect('Welcome/login_page');
 					}
@@ -1047,7 +1054,7 @@ class Welcome extends CI_Controller {
 					{
 						$te = $this->upload->data();
 						$namafile = $te["file_name"];
-						$this->Model->insert_post($this->session->userdata('myusername'),$postingan,$namafile,1,1);
+						$this->Model->insert_post($this->session->userdata('myusername'),$mentionuserlist,$postingan,$namafile,1,1);
 						redirect('Welcome/login_page');
 					}
                 }
@@ -1055,12 +1062,54 @@ class Welcome extends CI_Controller {
                 {
 					$te = $this->upload->data();
 					$namafile = $te["file_name"];
-					$this->Model->insert_post($this->session->userdata('myusername'),$postingan,$namafile,1,1);
+					$this->Model->insert_post($this->session->userdata('myusername'),$mentionuserlist,$postingan,$namafile,1,1);
 
 					redirect('Welcome/login_page');
                 }
 				
 				
+		}
+		else if(isset($_POST['search'])){
+			$keyword = $post["keyword"];
+			if ($keyword == "")
+			{
+				redirect("Welcome/Login_page");
+			}
+			else
+			{
+				$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
+				$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
+				
+				$data['percomment'] = $this->Model->select_comment();
+				$data['peremo'] = $this->Model->select_emo();
+				$data['resultfriend'] = $this->Model->select_friend_search($keyword);
+				if ($data['resultfriend'] == null)
+				{
+					$data['textfriends'] = "Sorry, we couldn't find users with the keyword ".$keyword;
+				}
+				else 
+				{
+					$friendcount = $this->Model->count_friends_search($keyword);
+					$data["textfriends"] = "Showing ".$friendcount." users with the keyword ".$keyword. " : ";
+				}
+				//mencari user yg bukan diri sendiri
+				$lookuser = $this->Model->select_user_notme($this->session->userdata('myusername'));
+				//mencari user aktif yg bukan diri sendiri
+				$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
+				$data['allposting'] = $this->Model->select_post_search($keyword);
+				if ($data['allposting'] == null)
+				{
+					$data["textresults"] = "Sorry, we couldn't find posts with the keyword ".$keyword;
+				}
+				else
+				{
+					$postcount = $this->Model->count_posts_search($keyword);
+					$data["textresults"] = "Showing ".$postcount." posts with the keyword ".$keyword. " : ";
+				}
+				//komentar posting
+				$data['percomment'] = $this->Model->select_comment();
+				$this->load->view('explore',$data);
+			}
 		}
 		else if(isset($_POST['logout'])){
 			$this->load->view('index');

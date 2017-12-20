@@ -38,6 +38,18 @@
 	$(document).ready(function(){
 		
 		$('.reaction').slideUp();
+		$('.notifications').slideUp();
+		
+		$('.notif-title').click(function(){
+			$('.notifications').slideToggle();
+			$.post("<?php echo base_url(); ?>"+'index.php/Welcome/read_notif',{},function(value){				
+			});
+			
+			$('.notif-title').click(function(){
+				window.location = "<?php echo base_url(); ?>"+'index.php/Welcome/login_page';
+			});
+		});
+		
 		$('.report-field').slideUp();
 		
 		$('.reactchoose').click(function(){
@@ -170,9 +182,9 @@
         <div class="form-group col-sm-offset-4 col-sm-6">
 		  <ul class="nav navbar-nav">
 		    <li> <div class="form-group searchbar ">
-              <input type="text" class="form-control" placeholder="search">
+              <input type="text" name="keyword" class="form-control" placeholder="search">
 			    </div>
-				<button type="submit" class="searchbtn" style="border:none;background:none;"><i class="fa fa-search"></i></button>
+				<button type="submit" name="search" class="searchbtn" style="border:none;background:none;"><i class="fa fa-search"></i></button>
 			 </li>
             <li class="actived"><a href="login">Home</a></li>
             <li><a href="member" type='button' name='member'>Friends
@@ -289,9 +301,6 @@
 					<input type="file" name="openVideo" id="openVideo" style="display:none;" accept="video/*">
                       <button type="button" name="inputVideo" id="inputVideo" class="btn btn-default"><i class="fa fa-file-video-o"></i>Video</button>
                     </div>
-				 <div class="pull-left">
-					<p><strong><?php echo $this->session->flashdata("error"); ?></strong></p><br>
-				 </div>
                  <div class="pull-right">
 					 <input type="submit" class="btn btn-default submit" name="postBTN" value="Submit">
                   </div>
@@ -441,12 +450,12 @@
           <div class="col-md-4">
             <div class="panel panel-default groups">
               <div class="panel-heading">
-                <h3 class="panel-title">Notifications</h3>
+                <h3 class="panel-title notif-title">Notifications (<?php echo count($count_sidenotif_friend)+count($count_sidenotif_group); ?>)</h3>
               </div>
-              <div class="panel-body">
+              <div class="panel-body notifications"  style="height:400px; overflow-y:scroll;">
 				<?php if ($sidenotif_friend != null) { ?>
 				<?php foreach ($sidenotif_friend as $row) { ?>
-					<div class="group-item">
+					<div>
 					    <img src=<?php echo base_url("ppicture/".$row->pp);?> style="border-radius:50%;width:50px;height:50px;" alt="">
 					    <?php 
 							if ($row->type == "reqfriend")
@@ -460,9 +469,8 @@
 						?>
 					  <div class='datetime'><?php echo $row->date; ?></div>
 					</div>
-					<div class="clearfix"></div>
 				<?php }} ?>
-				<?php if ($sidenotif_group != null) { ?>
+				<?php if ($sidenotif_group != null) { ?><br>
 				<?php foreach ($sidenotif_group as $row) { ?>
 					<div class="group-item">
 					    <img src=<?php echo base_url("ppicture/".$row->pp);?> style="border-radius:50%;width:50px;height:50px;" alt="">
@@ -474,11 +482,13 @@
 							else if ($row->type == "accgroup") 
 							{
 								echo "<p>".$row->name." has joined the group ".$row->group_name.".</p>";
-							} 
+							}
+							
 						?>
 					  <div class='datetime'><?php echo $row->date; ?></div>
+						
 					</div>
-					<div class="clearfix"></div>
+					
 				<?php }} ?>
               </div>
             </div>

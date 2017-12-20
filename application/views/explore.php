@@ -152,7 +152,7 @@
             <li><a href=<?php echo base_url()."/index.php/Welcome/member"?> type='button' name='member'>Friends</a></li>
             <li><a href=<?php echo base_url()."/index.php/Welcome/group"?>>Groups</a></li>
             <li><a href="photos.php">Photos</a></li>
-            <li class="user"><a href=<?php echo base_url()."/index.php/Welcome/profile"?> style="background:none; color:white;"><?php echo $this->session->userdata('myaccount'); ?></a></li>
+            <li class="user"><a href="profile" style="background:none; "><img src=<?php echo base_url("ppicture/".$this->session->userdata('profilepict'));?> style="height:50px; border-radius:50px;" width=50 alt=""></a></li>
 			<li><button type="submit" name="logout" class="btn btn-default logout">Log out</button></li>
           </ul>
         </div>
@@ -213,12 +213,24 @@
             <h1 class="page-header">Search Results</h1>
 			<div class="row">
 				<div class="col-md-12">
-				<p><strong style="font-size:16pt;">Friends</strong></p>
+				<p><strong style="font-size:16pt;">Users</strong></p>
 				<p><?php echo $textfriends;?></p>
 				<?php if ($resultfriend != null) {?>
 				<div class="panel panel-default post">
 					<div class="panel-body">
-						
+						<?php foreach ($resultfriend as $row) { ?>
+							<div class="group-item">
+								<div style="float:left;padding-right:2%;">
+								<?php echo "<a href='".base_url()."index.php/Welcome/goto_mention/".$row->username."'>"; ?>
+								<img src=<?php echo base_url("ppicture/".$row->pp);?> style="border-radius:50%;width:50px;height:50px;" alt="">
+								<?php echo "</a>"; ?>
+								</div>
+								<div>
+								<p><strong><?php echo $row->name; ?></strong></p>
+								<p><?php echo $row->username; ?></p>
+								</div>
+							</div>
+						<?php } ?>
 					</div>
 				</div>
 				<?php } ?>
@@ -336,6 +348,12 @@
 				  </div>
 				</div>
 				<?php } ?>
+
+						 </div>
+					   </div>
+					 </div>
+				  </div>
+				</div>
 			  </div>
 			  </div>
 		  </div>
