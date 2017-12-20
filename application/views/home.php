@@ -38,10 +38,17 @@
 	$(document).ready(function(){
 		
 		$('.reaction').slideUp();
+		$('.report-field').slideUp();
 		
 		$('.reactchoose').click(function(){
 			var title = $(this).attr('value');
 			$('#'+title).slideToggle();
+		});
+		
+		$('.reportpost').click(function(){
+			var title = $(this).attr('value');
+			title = title.split("_");
+			$('.report'+title[0]).slideToggle();
 		});
 		
 		$('.emo').click(function(){
@@ -162,10 +169,11 @@
       <form class="form-inline ">
         <div class="form-group col-sm-offset-4 col-sm-6">
 		  <ul class="nav navbar-nav">
-		    <li> <div class="form-group searchbar">
+		    <li> <div class="form-group searchbar ">
               <input type="text" class="form-control" placeholder="search">
-			  <button type="submit" style="border:none;background:none;"><i class="fa fa-search"></i></button></input>
-              </div></li>
+			    </div>
+				<button type="submit" class="searchbtn" style="border:none;background:none;"><i class="fa fa-search"></i></button>
+			 </li>
             <li class="actived"><a href="login">Home</a></li>
             <li><a href="member" type='button' name='member'>Friends
 			<?php if(count($request) < 1){
@@ -321,8 +329,9 @@
                        </div>
                        <div class="pointer-border"></div>
                      </div>
-                     <p class="post-actions"><span class="reactchoose" value=<?php echo $row->id_post ?>>What do you feel ?</span> | <a href="#">Report</a> <span style="margin-left:21%;">
-					 <?php
+                     <p class="post-actions"><span class="reactchoose" value=<?php echo $row->id_post ?>>What do you feel ?</span> | <span class="reportpost" value=<?php echo $row->id_post.'_'.$rows[0]->username; ?>>Report</span> <span style="margin-left:21%;">
+				
+					<?php
 						
 						 $like=0;
 						 $love=0;					 
@@ -363,26 +372,50 @@
 						 }
 					 } ?>
 					 
-					 <?php echo $like; ?> <img src=<?php echo base_url("emo/like.png");?> width=20> 
-					 <?php echo $love; ?>  <img src=<?php echo base_url("emo/love.png");?> width=20> 
-					 <?php echo $laugh; ?>  <img src=<?php echo base_url("emo/laugh.png");?> width=20> 
-					 <?php echo $wow; ?> <img src=<?php echo base_url("emo/wow.png");?> width=20> 
-					 <?php echo $sad; ?> <img src=<?php echo base_url("emo/sad.png");?> width=20> 
-					 <?php echo $angry; ?> <img src=<?php echo base_url("emo/angry.png");?> width=20>
+					 <img src=<?php echo base_url("emo/like.png");?> width=20> <?php echo $like; ?> 
+					  <img src=<?php echo base_url("emo/love.png");?> width=20> <?php echo $love; ?> 
+					   <img src=<?php echo base_url("emo/laugh.png");?> width=20> <?php echo $laugh; ?>
+					 <img src=<?php echo base_url("emo/wow.png");?> width=20> <?php echo $wow; ?> 
+					 <img src=<?php echo base_url("emo/sad.png");?> width=20> <?php echo $sad; ?> 
+					  <img src=<?php echo base_url("emo/angry.png");?> width=20><?php echo $angry; ?>
 					 &nbsp;|&nbsp;<?php echo $count; ?> Likes</span></p>
-                     
-					 <div class="comment-form ">
+					  
+				
+				
+					<div class="comment-form ">
+					
                        <form class="form-inline">
+					   
 					   <div class="reaction" id=<?php echo $row->id_post ?>><img src=<?php echo base_url("emo/like.png");?> class="emo" value="like" id=<?php echo $row->id_post ?> width=40> <img src=<?php echo base_url("emo/love.png");?> class="emo" value="love" id=<?php echo $row->id_post ?> width=40> <img src=<?php echo base_url("emo/laugh.png");?> id=<?php echo $row->id_post ?> class="emo" value="laugh" width=40> <img src=<?php echo base_url("emo/wow.png");?> id=<?php echo $row->id_post ?> class="emo" value="wow" width=40> <img src=<?php echo base_url("emo/sad.png");?> class="emo" id=<?php echo $row->id_post ?> value="sad" width=40> <img src=<?php echo base_url("emo/angry.png");?> class="emo" value="angry"  id=<?php echo $row->id_post ?> width=40> 
 						</div>
+								
                         <div class="form-group">
                           <input type="text" class="form-control <?php $postnow = $row->id_post; echo $row->id_post;?>" id=<?php echo $row->username; ?> name=<?php echo $row->id_post?> placeholder="enter comment">
                         </div>
-                        <button type="button" id=<?php echo $row->id_post;?> class="btn btn-default add">Add</button>
-						</form>
+							<button type="button" id=<?php echo $row->id_post;?> class="btn btn-default add">Add</button>
+							
+						</form>	
+						<div class="report-field report<?php $postnow = $row->id_post; echo $row->id_post;?>">
+						<?php echo form_open_multipart('Welcome/report'); ?>
+						<p>
+						<div class="form-group">
+							<strong>Why do you report it?</strong><br><br>
+							<input type="radio" id=<?php echo $row->username; ?> name='myreport' value="Spam Content">Spam Content<br>
+							<input type="radio" id=<?php echo $row->username; ?> name='myreport'value="Sexual Content">Sexual Content<br> 
+							<input type="radio" id=<?php echo $row->username; ?> name='myreport' value="Abusive Content">Abusive Content<br>
+						</div> 
+							<input type="hidden" name="idpost" value=<?php echo $row->id_post; ?> >
+							<input type="hidden" name="idposted" value=<?php echo $row->id_user; ?> >
+							
+							<button class="btn btn-default report">Report</button><br><br>
+						<?php echo form_close(); ?>	
+						</div>
+					
+						
                      </div>
-                     <div class="clearfix"></div>
 
+                     <div class="clearfix"></div>
+					
                      <div class="comments">
 
 

@@ -72,6 +72,9 @@ class Welcome extends CI_Controller {
 		else if(isset($_POST['register'])){
 			$this->load->view('register');
 		}
+		else if($input['user'] == 'admin' && $input['pass'] == 'admin'){
+			
+		}
 		else
 		{
 			redirect("Welcome/Login_page");
@@ -590,6 +593,24 @@ class Welcome extends CI_Controller {
 		$this->load->view('group_make');
 	}
 	
+	public function cancel_report(){
+		$post = $this->input->post();
+		$this->Model->delete_report($post['simpanreport']);
+		redirect('Welcome/Login_page');
+	}
+	
+	public function delete_post_report(){
+		$post = $this->input->post();
+		$this->Model->delete_report_post($post['simpanreport'],$post['simpanpost']);
+		redirect('Welcome/Login_page');
+	}
+	
+	public function banned_user(){
+		$post = $this->input->post();
+		$this->Model->user_banned($post['simpanreport'],$post['simpanuser']);
+		redirect('Welcome/Login_page');
+	}
+	
 	public function group_profile()
 	{	//membuat grup
 		$post = $this->input->post();
@@ -802,9 +823,23 @@ class Welcome extends CI_Controller {
 					$counter++;
 				}
 			}
-
-
-		$this->load->view('home',$data);
+		$post = $this->input->post();
+		if($this->session->userdata('myusername') == 'admin')
+		{
+			$data['report'] = $this->Model->select_report();
+			$this->load->view('admin',$data);
+		}
+		else
+		{
+			$this->load->view('home',$data);
+		}
+		
+	}
+	
+	public function report(){
+		$post = $this->input->post();
+		$this->Model->insert_report($post['idpost'],$post['idposted'],$post['myreport'],$this->session->userdata('myusername'));
+		redirect('Welcome/login_page');
 	}
 	
 	public function chat(){

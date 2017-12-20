@@ -75,6 +75,16 @@ class Model extends CI_Model {
 		$this->db->insert('comment',$data);
 	}
 	
+	function insert_report($idpost,$idposted,$text,$username){
+		$data = array(
+			'user_id' => $username,
+			'reported_id' => $idposted,
+			'id_post' => $idpost,
+			'note' => $text
+		);
+		$this->db->insert('report',$data);
+	}
+	
 	function insert_emo($post,$user,$emo){
 		$data = array(
 			'id_post' => $post,
@@ -274,6 +284,20 @@ class Model extends CI_Model {
 		);
 		$this->db->update('user',$data);
 	}
+	
+	function user_banned($idreport,$username){
+		//$query = "update user set password = '".$pass."',confirmpassword = '".$cpass."' where username = '".$username."'";
+		
+		$this->db->where("username",$username);
+		$data = array(
+			'active' => 0
+		);
+		$this->db->update('user',$data);
+		
+		$this->db->where("id_report",$idreport);
+		$this->db->delete('report');
+	}
+	
 	function cancel_request($username,$friend){		
 		$this->db->select("*");
 		$this->db->from("friend_request");
@@ -314,8 +338,25 @@ class Model extends CI_Model {
 		
 		$this->db->where("id_group_request",$result->row()->id_group_request);
 		$this->db->delete('group_request');
+	}
+	
+	function delete_report($idreport){
+		$this->db->where("id_report",$idreport);
+		$this->db->delete('report');
+	}
+	
+	function delete_report_post($idreport,$idpost){
+		$this->db->where("id_report",$idreport);
+		$this->db->delete('report');
 		
+		$this->db->where("id_post",$idpost);
+		$this->db->delete('post');
 		
+		$this->db->where("id_post",$idpost);
+		$this->db->delete('comment');
+		
+		$this->db->where("id_post",$idpost);
+		$this->db->delete('disukai');
 	}
 	
 	function exit_group_member($idgroup,$username){
@@ -591,6 +632,17 @@ class Model extends CI_Model {
 		$result = $this->db->get();
 		return $result->result();
 	}
+	
+	function select_report(){
+		//$query = "select * from user";
+		$this->db->select("*");
+		$this->db->from("report r");
+		$this->db->join("user u","r.reported_id = u.username");
+		$this->db->join("post p","p.id_post = r.id_post");
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
 	function select_all_group_members($idgroup){
 		$this->db->select("*");
 		$this->db->from("user u");

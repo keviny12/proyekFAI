@@ -110,9 +110,11 @@
       <form class="form-inline">
          <div class="form-group col-sm-offset-4 col-sm-6">
 		  <ul class="nav navbar-nav">
-		    <li> <div class="form-group searchbar">
+		    <li> <div class="form-group searchbar ">
               <input type="text" class="form-control" placeholder="search">
-              </div></li>
+			    </div>
+				<button type="submit" class="searchbtn" style="border:none;background:none;"><i class="fa fa-search"></i></button>
+			 </li>
             <li ><a href="login_page">Home</a></li>
             <li><a href="member" type='button' name='member'>Friends
 			<?php if(count($request) < 1){

@@ -47,6 +47,30 @@
 			
 		});
 		
+		$(".cancel_report").click(function(){
+			//confirmation cancel
+			var idreport = $(this).attr('id');			
+			$.post("<?php echo base_url(); ?>"+'index.php/Welcome/cancel_report',{simpanreport:idreport},function(value){	
+				window.location = "<?php echo base_url(); ?>"+'index.php/Welcome/login_page';
+			});
+		});
+		
+		$(".delete_post_report").click(function(){
+			//confirmation cancel
+			var id = $(this).attr('id').split("_");			
+			$.post("<?php echo base_url(); ?>"+'index.php/Welcome/delete_post_report',{simpanreport:id[0],simpanpost:id[1]},function(value){	
+				window.location = "<?php echo base_url(); ?>"+'index.php/Welcome/login_page';
+			});
+		});
+		
+		$(".banned").click(function(){
+			//confirmation cancel
+			var id = $(this).attr('id').split("_");			
+			$.post("<?php echo base_url(); ?>"+'index.php/Welcome/banned_user',{simpanreport:id[0],simpanuser:id[1]},function(value){	
+				window.location = "<?php echo base_url(); ?>"+'index.php/Welcome/login_page';
+			});
+		});
+		
 		$(".cancel_group").click(function(){
 			//confirmation cancel
 			var username = $(this).attr('id');				
@@ -133,28 +157,8 @@
     <div class="container">
       <img src=<?php echo base_url("img/logo.png");?> height=50 class="logo col-sm-2" alt="">
       <form class="form-inline ">
-        <div class="form-group col-sm-offset-4 col-sm-6">
+        <div class="form-group col-sm-offset-8 col-sm-2">
 		  <ul class="nav navbar-nav">
-		    <li> <div class="form-group searchbar ">
-              <input type="text" class="form-control" placeholder="search">
-			    </div>
-				<button type="submit" class="searchbtn" style="border:none;background:none;"><i class="fa fa-search"></i></button>
-			 </li>
-            <li><a href="login_page">Home</a></li>
-            <li><a href="member" type='button' name='member'>Friends
-			<?php if(count($request) < 1){
-			}else if(count($request) > 99){?>
-			<i class="notif"><?php echo '99+';?></i>
-			<?php }else{?>
-			<i class="notif"><?php echo count($request);?></i>
-			<?php }?></a></li>
-            <li class="actived"><a href="group">Groups
-			<?php if(count($group_permission) < 1){
-			}else if(count($group_permission) > 99){?>
-			<i class="notif"><?php echo '99+';?></i>
-			<?php }else{?>
-			<i class="notif"><?php echo count($group_permission);?></i>
-			<?php }?></a></li>
             <li class="user"><a href="profile" style="background:none; "><img src=<?php echo base_url("ppicture/".$this->session->userdata('profilepict'));?> style="height:50px; 	border-radius:50px;" width=50 alt=""></a></li>
 			<li><button type="submit" name="logout" class="btn btn-default logout">Log out</button></li>
           </ul>
@@ -162,67 +166,8 @@
 		</form>
     </div>
   </header>
-<div class="mSidebar">
-		<div class='header-chat'>Active Users (30)</div>
-		<div class='contains-chat'>
-		<?php foreach($chatuser as $row){ ?>
-		<br>
-		<div class="row member-row contact">
-			<div class="col-md-4">
-				<img src=<?php echo base_url("ppicture/".$row->pp);?> style="height:50px;" class="img-thumbnail" width=100 alt="">
-			</div>
-			<div class="text-left chat" style="margin-top:1%;">
-				<?php echo $row->name; ?>
-			</div>
-		</div>
-		<?php } ?>
-		</div>
-	</div>
-	
-	<div class="myChat">
-		<table>
-		<td class="chatnow1">
-			<div class='header-mychat'><img src="img/user.png" class="img-thumbnail" width=50 alt=""> Kevin Yudibrata </div> <a href="#" class='quit'>X</a>
-			<div class='contains-mychat'>
-				<div class="row member-row">
-				<br>
-					<div class="text-left yourchat col-sm-11">
-						Kevin, ayo siap2x FAI<div style='font-size:8pt;'>at 08:50</div>
-					</div>
-				</div>
-			</div>
-	
-			<input type='text' class='chat-text'><button type='button' class='send'> > </button>
-		</td>
-		<td>&nbsp&nbsp&nbsp &nbsp&nbsp&nbsp  </td>
-		<td class="chatnow2">
-			<div class='header-mychat'><img src="img/user.png" class="img-thumbnail" width=50 alt=""> Lucas Emil </div><a href="#" class='quit'>X</a>
-			<div class='contains-mychat'>
-				<div class="row member-row">
-					
-				
-				</div>
-			</div>
-	
-			<input type='text' class='chat-text'><button type='button' class='send'> > </button>
-		</td>
-		</table>
-	</div>
     <nav class="navbar navbar-default">
-      <div class="container">
-		<div class="col-md-offset-10 col-md-2">
-				<p><a href="group_maker" class="btn btn-primary mybutton btn-block"><i class="fa fa-plus"></i> Make a Group </a></p>
-		</div>
-        <div class="navbar-header">
-			
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-      </div>
+
     </nav>
 
     <section>
@@ -230,7 +175,7 @@
         <div class="row">
           <div class="col-md-8">
             <div class="groups">
-              <h1 class="page-header">Group Admin</h1>
+              <h1 class="page-header">Administrator</h1>
               
 			  <?php foreach($group as $row){?>
 			  <div class="group-item group-now">
@@ -251,58 +196,43 @@
 			  <?php }?>
               <div class="clearfix"></div>
             </div>
-			 <div class="groups">
-              <h1 class="page-header">Group Member</h1>
-              
-			  <?php foreach($group_member as $row){?>
-			  <div class="group-item group-now">
-                <img src=<?php echo base_url("gpicture/".$row->group_img);?> width=150 height=150 alt="">
-                <h4><a href="#"><?php echo $row->group_name;?></a></h4>
-                <p><?php echo $row->caption;?>
-					
-					<div class="col-md-3">
-							<p><a href="#" id=<?php echo $row->id_group;?> class="btn btn-primary mybuttonprof btn-block group-prof-member"><i class="fa fa-edit"></i> View Profile</a></p>
-					</div>
-					
-					<div class="col-md-3">
-							<p><a href="#" id=<?php echo $row->id_group;?> style="margin-top:35px;" class="btn btn-danger btn-block exit-group-member"><i class="fa fa-close"></i> Exit from Group</a></p>
-					</div>
-				  
-                </p>
-              </div>
-			  <?php }?>
-              <div class="clearfix"></div>
-            </div>
+			
           </div>
           <div class="col-md-4">
   
             <div class="panel panel-default groups">
               <div class="panel-heading">
-                <h3 class="panel-title">Groups Permission</h3>
+                <h3 class="panel-title">Reported Posting</h3>
               </div>
-              <div class="panel-body">
-              <?php foreach($group_permission as $row){?>
+              <div class="panel-body" style="height:700px; overflow-x:hidden; overflow-y:scroll; ">
+              <?php foreach($report as $row){?>
 				<div class="group-item">
-					<div class="col-md-4">
-							<img src=<?php echo base_url("gpicture/".$row->group_img); ?> class="img-thumbnail" style="height:85px;" alt="">
-					</div>	
-						<div class="text-left col-md-8">
-							<h4><?php echo $row->group_name;?></h4>
-						</div>
-						<div class="text-left col-md-8">
-							<?php echo $row->caption;?>
-						</div>
+					 <?php if($row->attach != '0'){?>
+				   <embed src=<?php echo base_url("posts/".$row->attach);?>  autostart="false" loop="false" width="100%" height="300px" controller="true" bgcolor="#333333"></embed>
+				   <?php } ?>   <div class="pointer"  >
+                         <p><br>Caption: <br><?php echo $row->text; ?><hr></hr></p>
+                       </div>
+
+					<div id="report data">
+					<?php foreach($alluser as $rows){ if($rows[0]->username == $row->user_id){?>
+					<table><tr>
+					<td>Posted by </td><td> &nbsp : <a href="" id="$row->user_id"><?php echo $rows[0]->name; ?></a></td></tr>
+					<?php }}?><tr>
+					<td>Reported by </td><td>&nbsp :  <a href="" id="$row->reported_id"><?php echo $row->name; ?></a></td></tr>
+					<tr>
+					<td>Reason </td><td> &nbsp : <?php echo $row->note; ?></td></tr>
+					</table>
+					</div><br>					
 					
-						<div class="col-md-8 col-md-offset-4">
-							<p><a href="#" id=<?php echo $row->id_group; ?> class="btn btn-success btn-block add_group"><i class="fa fa-users"></i> Confirm Request</a></p>
-						</div>
-						<div class="col-md-8 col-md-offset-4">
-							<p><a href="#" id=<?php echo $row->id_group; ?> class="btn btn-danger btn-block cancel_group"><i class="fa fa-close"></i> Cancel Request</a></p>
-						</div>
+
+				
+					<p><span id=<?php echo $row->id_report; ?> class="btn btn-danger btn-block cancel_report"><i class="fa fa-close"></i> Cancel Report</span></p>
+					<p><span id=<?php echo $row->id_report."_".$row->id_post; ?> class="btn btn-danger btn-block delete_post_report"><i class="fa fa-close"></i> Delete Post</span></p>
+					<p><span id=<?php echo $row->id_report."_".$row->id_user; ?> class="btn btn-danger btn-block banned"><i class="fa fa-close"></i> Banned User</span></p>
+				
 
 				</div>
 			  <?php } ?>
-				
 				
               </div>
             </div>
