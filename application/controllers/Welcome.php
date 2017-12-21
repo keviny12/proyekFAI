@@ -939,9 +939,8 @@ class Welcome extends CI_Controller {
 			
 			for($i=0;$i<12;$i++)
 			{
-				$data['userchart'][$i] = count($this->Model->select_user_bydate($i));
+				$data['userchart'][$i] = count($this->Model->select_user_bydate($i+1));
 			}
-			
 			
 			$this->load->view('admin',$data);
 
