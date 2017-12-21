@@ -427,19 +427,15 @@ class Welcome extends CI_Controller {
 		
 		if(isset($_POST['postBTN'])){
 				$postingan = $post['comment'];
-				preg_match_all('/(#\w+)/', $postingan, $results);
-				foreach ($results[0] as $hashtag)
-				{
-					$postingan = str_replace($hashtag,"<a href='search_hashtag/".trim($hashtag,"#")."'>".$hashtag."</a>",$postingan);
-				}
-				preg_match_all('/(@\w+)/', $postingan, $results);
+				$postingan = preg_replace('/#(\w+)/', '<a href="search_hashtag/$1">#$1</a>', $postingan);
+				$postingan = preg_replace('/@(\w+)/', '<a href="goto_mention/$1">@$1</a>', $postingan);
+				/*preg_match_all('/(@\w+)/', $postingan, $results);
 				foreach ($results[0] as $mention)
 				{
 					$ownmention = $this->session->userdata("myusername");
 					if (trim($mention,"@") == $ownmention)
 					{
 						$postingan = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$postingan);
-						array_push($hashtaglist,$hashtag);
 					}
 					else
 					{
@@ -456,7 +452,7 @@ class Welcome extends CI_Controller {
 							}
 						}
 					}
-				}
+				}*/
 		        $config['upload_path']          = './posts/';
                 $config['allowed_types']        = 'jpeg|jpg|png|mp4|mkv|avi|wmv|mov';
                 $this->load->library('upload', $config);
@@ -484,6 +480,7 @@ class Welcome extends CI_Controller {
 					$namafile = $te["file_name"];
 					$this->Model->insert_post($this->session->userdata('myusername'),$hashtaglist,$mentionuserlist,$postingan,$namafile,1,1);
                 }
+			redirect("Welcome/profile");
 		}
 		
 		else if (isset($_POST['savechanges']))
@@ -787,13 +784,9 @@ class Welcome extends CI_Controller {
 		$mentionuserlist = array();
 		if(isset($_POST['postBTN'])){
 				$postingan = $post['comment'];
-				preg_match_all('/(#\w+)/', $postingan, $results);
-				foreach ($results[0] as $hashtag)
-				{
-					$postingan = str_replace($hashtag,"<a href='search_hashtag/".trim($hashtag,"#")."'>".$hashtag."</a>",$postingan);
-					array_push($hashtaglist,$hashtag);
-				}
-				preg_match_all('/(@\w+)/', $postingan, $results);
+				$postingan = preg_replace('/#(\w+)/', '<a href="search_hashtag/$1">#$1</a>', $postingan);
+				$postingan = preg_replace('/@(\w+)/', '<a href="goto_mention/$1">@$1</a>', $postingan);
+				/*preg_match_all('/(@\w+)/', $postingan, $results);
 				foreach ($results[0] as $mention)
 				{
 					$ownmention = $this->session->userdata("myusername");
@@ -816,7 +809,7 @@ class Welcome extends CI_Controller {
 							}
 						}
 					}
-				}
+				}*/
 		        $config['upload_path']          = './posts/';
                 $config['allowed_types']        = 'jpeg|jpg|png|mp4|mkv|avi|wmv|mov';
                 $this->load->library('upload', $config);
@@ -854,13 +847,9 @@ class Welcome extends CI_Controller {
 		$mentionuserlist = array();
 		if(isset($_POST['postBTN'])){
 				$postingan = $post['comment'];
-				preg_match_all('/(#\w+)/', $postingan, $results);
-				foreach ($results[0] as $hashtag)
-				{
-					$postingan = str_replace($hashtag,"<a href='search_hashtag/".trim($hashtag,"#")."'>".$hashtag."</a>",$postingan);
-					array_push($hashtaglist,$hashtag);
-				}
-				preg_match_all('/(@\w+)/', $postingan, $results);
+				$postingan = preg_replace('/#(\w+)/', '<a href="search_hashtag/$1">#$1</a>', $postingan);
+				$postingan = preg_replace('/@(\w+)/', '<a href="goto_mention/$1">@$1</a>', $postingan);
+				/*preg_match_all('/(@\w+)/', $postingan, $results);
 				foreach ($results[0] as $mention)
 				{
 					$ownmention = $this->session->userdata("myusername");
@@ -883,7 +872,7 @@ class Welcome extends CI_Controller {
 							}
 						}
 					}
-				}
+				}*/
 		        $config['upload_path']          = './posts/';
                 $config['allowed_types']        = 'jpeg|jpg|png|mp4|mkv|avi|wmv|mov';
                 $this->load->library('upload', $config);
@@ -1223,13 +1212,9 @@ class Welcome extends CI_Controller {
 		$post = $this->input->post();
 		if(isset($_POST['postBTN'])){
 				$postingan = $post['comment'];
-				preg_match_all('/(#\w+)/', $postingan, $results);
-				foreach ($results[0] as $hashtag)
-				{
-					$postingan = str_replace($hashtag,"<a href='search_hashtag/".trim($hashtag,"#")."'>".$hashtag."</a>",$postingan);
-					array_push($hashtaglist,$hashtag);
-				}
-				preg_match_all('/(@\w+)/', $postingan, $results);
+				$postingan = preg_replace('/#(\w+)/', '<a href="search_hashtag/$1">#$1</a>', $postingan);
+				$postingan = preg_replace('/@(\w+)/', '<a href="goto_mention/$1">@$1</a>', $postingan);
+				/*preg_match_all('/(@\w+)/', $postingan, $results);
 				foreach ($results[0] as $mention)
 				{
 					$ownmention = $this->session->userdata("myusername");
@@ -1252,7 +1237,7 @@ class Welcome extends CI_Controller {
 							}
 						}
 					}
-				}
+				}*/
 		        $config['upload_path'] = './posts/';
                 $config['allowed_types'] = 'jpeg|jpg|png|mp4|mkv|avi|wmv|mov';
                 $this->load->library('upload', $config);

@@ -187,7 +187,7 @@
 	</div>
     <nav class="navbar navbar-default">
     </nav>
-
+	<?php echo form_open_multipart('Welcome/group_post_member'); ?>
     <section>
       <div class="container">
         <div class="row">

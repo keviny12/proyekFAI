@@ -187,6 +187,7 @@
       <div class="container">
         <div class="row">
           <div class="col-md-8">
+		  <?php if ($otherprofile != null) {?>
 		  <?php foreach($otherprofile as $row){ $this->session->userdata('userfriend')?>
             <div class="profile">
               <h1 class="page-header"><?php echo $row->name; ?></h1>
@@ -309,8 +310,14 @@
 		 <?php } ?>
           </div>
             </div>
+			<?php }} else { ?>
+				<div class="profile">
+					<h1 class="page-header">User Not Found</h1>
+					<p>Sorry, the user you're looking for is not found</p>
+				</div>
 			<?php } ?>
           </div>
+		  <?php if ($otherprofile != null) {?>
           <div class="col-md-4">
             <div class="panel panel-default friends">
               <div class="panel-heading">
@@ -328,6 +335,7 @@
               </div>
             </div>
           </div>
+		  <?php } ?>
         </div>
       </div>
     </section>
