@@ -466,7 +466,7 @@
   
             <div class="panel panel-default groups">
               <div class="panel-heading">
-                <h3 class="panel-title">Reported Posting</h3>
+                <h3 class="panel-title">Reported Posting (<?php echo count($reports); ?>)</h3>
               </div>
               <div class="panel-body" style="height:700px; overflow-x:hidden; overflow-y:scroll; ">
               <?php foreach($reports as $row){?>

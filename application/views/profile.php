@@ -391,13 +391,11 @@
 				 <?php if($friend != null){ foreach($friend as $row){?>
                   <li><a href=<?php echo "goto_mention/".$row[0]->username;?> class="thumbnail"><img src=<?php echo base_url("ppicture/".$row[0]->pp);?> style="width:100px;height:100px;" alt=""></a></li>
 				 <?php }}?>
-				 
                 </ul>
-                <div class="clearfix"></div>
-                <a class="btn btn-primary mybutton" href="member">View All Friends</a>
-              </div>
             </div>
           </div>
+		  
+		  
         </div>
       </div>
 	  

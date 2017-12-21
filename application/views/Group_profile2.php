@@ -79,6 +79,29 @@
 			
 			//menambahkan waktu
 		});
+		$('.reaction').slideUp();
+		$('.report-field').slideUp();
+		$('.reactchoose').click(function(){
+			var title = $(this).attr('value');
+			$('#'+title).slideToggle();
+		});
+		$('.reportpost').click(function(){
+			var title = $(this).attr('value');
+			title = title.split("_");
+			$('.report'+title[0]).slideToggle();
+		});
+		
+		$('.emo').click(function(){
+			var myemo = $(this).attr('value');
+			var idpost = $(this).attr('id');
+			
+			$.post("<?php echo base_url(); ?>"+'index.php/Welcome/add_emo',{simpanpost:idpost,simpanemo:myemo},function(value){				
+					window.location = "<?php echo base_url(); ?>"+'index.php/Welcome/login_page';
+			});
+			
+		});
+		
+		
 	});
 </script>
   <body onload="setup()">
@@ -192,31 +215,154 @@
               </div><br><br>
               <div class="row">
                 <div class="col-md-12">
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h3 class="panel-title">Profile Wall</h3>
-                    </div>
-                    <div class="panel-body">
-                      <form>
-                        <div class="form-group">
-                          <textarea class="form-control" placeholder="Write on the wall"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-default submit">Submit</button>
-                        <div class="pull-right">
-                          <div class="btn-toolbar">
-                            <button type="button" class="btn btn-default"><i class="fa fa-pencil"></i>Text</button>
-                            <button type="button" class="btn btn-default"><i class="fa fa-file-image-o"></i>Image</button>
-                            <button type="button" class="btn btn-default"><i class="fa fa-file-video-o"></i>Video</button>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
+				 <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Wall</h3>
+              </div>
+              <div class="panel-body">
+                  <div class="form-group">
+                    <textarea class="form-control" placeholder="Write on the wall" name="comment"></textarea>
                   </div>
+				     <div class="btn-toolbar">
+					<input type="file" name="openImage" id="openImage"  style="display:none;" accept="image/*">
+                      <button type="button" name="inputImage" id="inputImage" class="btn btn-default"><i class="fa fa-file-image-o"></i>Image</button>
+					<input type="file" name="openVideo" id="openVideo" style="display:none;" accept="video/*">
+                      <button type="button" name="inputVideo" id="inputVideo" class="btn btn-default"><i class="fa fa-file-video-o"></i>Video</button>
+                    </div>
+                 <div class="pull-right">
+					 <input type="submit" class="btn btn-default submit" name="postBTN" value="Submit">
+                  </div>
+
+              </div>
+			  <?php echo form_close(); ?>
+            </div>
+			<?php foreach($allposting as $row){?>
+            <div class="panel panel-default post">
+              <div class="panel-body">
+                 <div class="row">
+				 <?php $posting = $row->id_post; ?>
+                   <div class="col-sm-2">
+                     <a href="otherprofile" class="post-avatar thumbnail"><img src=<?php echo base_url("ppicture/".$row->pp);?> alt=""><div class="text-center"><?php echo $row->name ?></div></a>
+                   </div>
+                   <div class="col-sm-10">
+				   <?php if($row->attach != '0'){?>
+				   <embed src=<?php echo base_url("posts/".$row->attach);?>  autostart="false" loop="false" width="80%" height="450px" controller="true" bgcolor="#333333"></embed>
+				   <?php } ?>
+					 <div class="bubble">
+                       <div class="pointer">
+                         <p><?php echo $row->text ?></p>
+                       </div>
+                       <div class="pointer-border"></div>
+                     </div>
+                     <p class="post-actions"><span class="reactchoose" value=<?php echo $row->id_post ?>>What do you feel ?</span> | <span class="reportpost" value=<?php echo $row->id_post.'_'.$row->username; ?>>Report</span> <span style="margin-left:21%;">
+				
+				 <?php
+						
+						 $like=0;
+						 $love=0;					 
+						 $laugh=0;	
+						 $wow=0;	
+						 $sad=0;
+						 $angry=0;
+						 $count=0;
+						 
+					 foreach($peremo as $rows){
+						 if($rows->id_post ==  $posting)
+						 {
+							if($rows->jenislike == 'like')
+							{
+								$like++;
+							}
+							else if($rows->jenislike == 'love')
+							{
+								$love++;
+							}
+							else if($rows->jenislike == 'laugh')
+							{
+								$laugh++;
+							}
+							else if($rows->jenislike == 'wow')
+							{
+								$wow++;
+							}
+							else if($rows->jenislike == 'sad')
+							{
+								$sad++;
+							}
+							else if($rows->jenislike == 'angry')
+							{
+								$angry++;
+							}
+							$count++;
+						 }
+					 } ?>
+					 
+					 <?php echo $like; ?> <img src=<?php echo base_url("emo/like.png");?> width=20> 
+					 <?php echo $love; ?>  <img src=<?php echo base_url("emo/love.png");?> width=20> 
+					 <?php echo $laugh; ?>  <img src=<?php echo base_url("emo/laugh.png");?> width=20> 
+					 <?php echo $wow; ?> <img src=<?php echo base_url("emo/wow.png");?> width=20> 
+					 <?php echo $sad; ?> <img src=<?php echo base_url("emo/sad.png");?> width=20> 
+					 <?php echo $angry; ?> <img src=<?php echo base_url("emo/angry.png");?> width=20>
+					 &nbsp;|&nbsp;<?php echo $count; ?> Likes</span></p>
+                     
+					 <div class="comment-form ">
+					
+                       <form class="form-inline">
+					   
+					   <div class="reaction" id=<?php echo $row->id_post ?>><img src=<?php echo base_url("emo/like.png");?> class="emo" value="like" id=<?php echo $row->id_post ?> width=40> <img src=<?php echo base_url("emo/love.png");?> class="emo" value="love" id=<?php echo $row->id_post ?> width=40> <img src=<?php echo base_url("emo/laugh.png");?> id=<?php echo $row->id_post ?> class="emo" value="laugh" width=40> <img src=<?php echo base_url("emo/wow.png");?> id=<?php echo $row->id_post ?> class="emo" value="wow" width=40> <img src=<?php echo base_url("emo/sad.png");?> class="emo" id=<?php echo $row->id_post ?> value="sad" width=40> <img src=<?php echo base_url("emo/angry.png");?> class="emo" value="angry"  id=<?php echo $row->id_post ?> width=40> 
+						</div>
+								
+                        <div class="form-group">
+                          <input type="text" class="form-control <?php $postnow = $row->id_post; echo $row->id_post;?>" id=<?php echo $row->username; ?> name=<?php echo $row->id_post?> placeholder="enter comment">
+                        </div>
+							<button type="button" id=<?php echo $row->id_post;?> class="btn btn-default add">Add</button>
+							
+						</form>	
+						<div class="report-field report<?php $postnow = $row->id_post; echo $row->id_post;?>">
+						<?php echo form_open_multipart('Welcome/report'); ?>
+						<p>
+						<div class="form-group">
+							<strong>Why do you report it?</strong><br><br>
+							<input type="radio" id=<?php echo $row->username; ?> name='myreport' value="Spam Content">Spam Content<br>
+							<input type="radio" id=<?php echo $row->username; ?> name='myreport'value="Sexual Content">Sexual Content<br> 
+							<input type="radio" id=<?php echo $row->username; ?> name='myreport' value="Abusive Content">Abusive Content<br>
+						</div> 
+							<input type="hidden" name="idpost" value=<?php echo $row->id_post; ?> >
+							<input type="hidden" name="idposted" value=<?php echo $row->id_user; ?> >
+							
+							<button class="btn btn-default report">Report</button><br><br>
+						<?php echo form_close(); ?>	
+						</div>
+					
+						
+                     </div>
+                     <div class="comments">
+						
+						
+					 <!-- data di for terus dipilah dengan if milik siapa komen tsb -->
+					 <?php $postnow = $row->id_post; foreach($percomment as $rowss) { if($rowss->id_post == $postnow){ ?>
+                       <div class="comment">
+                         <a href="otherprofile" class="comment-avatar pull-left"><img src=<?php echo base_url("ppicture/".$rowss->pp);?> alt=""></a>
+                         <div class="comment-text">
+                           <?php echo $rowss->text;?>
+						   <div class='datetime'> at: <?php echo $rowss->date;?> | by: <a href="otherprofile"> <?php echo $rowss->name;?></a> </div>
+                         </div>
+                       </div>
+                       <div class="clearfix"></div>
+					 <?php }} ?>
+
+                     </div>
+                   </div>
+                 </div>
+              </div>
+            </div>
+		 <?php } ?>
                 </div>
               </div>
             </div>
 		   <?php } ?>
           </div>
+
           <div class="col-md-4">
             <div class="panel panel-default friends">
               <div class="panel-heading">
@@ -229,8 +375,6 @@
                   }
                   ?>
                 </ul>
-                <div class="clearfix"></div>
-                <a class="btn btn-primary mybutton" href="#">View All Friends</a>
               </div>
             </div>
         </div>

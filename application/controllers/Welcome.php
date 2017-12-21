@@ -19,7 +19,6 @@ class Welcome extends CI_Controller {
 	
 	public function index()
 	{
-		$this->session->set_userdata('file_name','user.png');
 		if($this->session->userdata('myusername'))
 		{
 			redirect('Welcome/Login_page');
@@ -190,6 +189,7 @@ class Welcome extends CI_Controller {
 			}
 			else
 			{
+				$this->session->set_userdata("kodegbr","user.png");
 				echo $this->upload->display_errors('<div id="output" style="opacity:0;">', '</div>');
 			}
 			$this->load->view("register2");
@@ -304,7 +304,7 @@ class Welcome extends CI_Controller {
 			$data['data-user'] = $this->Model->select_user_byusername($post['user']);
 			
 			$this->form_validation->set_rules('user','Username','required|min_length[8]|max_length[8]');
-			$this->form_validation->set_rules('pass','Password','required|min_length[8]|max_length[12]|alpha_numeric');
+			$this->form_validation->set_rules('pass','Pas0sword','required|min_length[8]|max_length[12]|alpha_numeric');
 			$this->form_validation->set_rules('forgotpass','Forgot','required|min_length[8]|max_length[30]');
 
 			
@@ -511,7 +511,8 @@ class Welcome extends CI_Controller {
 			}
 			else
 			{
-				$this->session->set_flashdata("errmsg",$this->upload->display_errors());
+				$this->Model->update_user($username,$firstname." ".$lastname,$email,$birth,$address,$gender,$post['gbr_group']);
+				//$this->session->set_flashdata("errmsg",$this->upload->display_errors());
 			}
 			redirect("Welcome/profile");
 		}
@@ -656,6 +657,7 @@ class Welcome extends CI_Controller {
 		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
 		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
 		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
+		$data['group_permission_user'] = $this->Model->select_group_permission_show($this->session->userdata('usergroup'));
 		$data['percomment'] = $this->Model->select_comment();
 		$data['peremo'] = $this->Model->select_emo();
 		//mencari data grup
@@ -684,7 +686,9 @@ class Welcome extends CI_Controller {
 		$data['chatuser'] = $this->Model->select_userfriend_notme($this->session->userdata('myusername'));
 		$data['request']=$this->Model->select_request_me($this->session->userdata('myusername'));
 		$data['group_permission'] = $this->Model->select_group_permission_byusername($this->session->userdata('myusername'));
-		
+		$data['allposting'] = $this->Model->select_post_group($this->session->userdata('usergroup'));
+		$data['percomment'] = $this->Model->select_comment();
+		$data['peremo'] = $this->Model->select_emo();
 		//mencari data grup
 		$data['groupmembers'] = $this->Model->select_all_group_members($this->session->userdata('usergroup'));
 		$data['othergroup'] = $this->Model->get_profile_group($this->session->userdata('usergroup'));
@@ -778,7 +782,72 @@ class Welcome extends CI_Controller {
 
 
 	}
-
+	public function group_post_member(){
+		$post = $this->input->post();
+		$hashtaglist = array();
+		$mentionuserlist = array();
+		if(isset($_POST['postBTN'])){
+				$postingan = $post['comment'];
+				preg_match_all('/(#\w+)/', $postingan, $results);
+				foreach ($results[0] as $hashtag)
+				{
+					$postingan = str_replace($hashtag,"<a href='search_hashtag/".trim($hashtag,"#")."'>".$hashtag."</a>",$postingan);
+					array_push($hashtaglist,$hashtag);
+				}
+				preg_match_all('/(@\w+)/', $postingan, $results);
+				foreach ($results[0] as $mention)
+				{
+					$ownmention = $this->session->userdata("myusername");
+					if (trim($mention,"@") == $ownmention)
+					{
+						$postingan = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$postingan);
+					}
+					else
+					{
+						$allfriends = $this->Model->select_userfriend_notme($this->session->userdata("myusername"));
+						if ($allfriends != null)
+						{	
+							foreach ($allfriends as $row)
+							{	
+								if ($row->username == trim($mention,"@"))
+								{
+									$postingan = str_replace($mention,"<a href='goto_mention/".trim($mention,"@")."'>".$mention."</a>",$postingan);
+									array_push($mentionuserlist, trim($mention,"@"));
+								}
+							}
+						}
+					}
+				}
+		        $config['upload_path']          = './posts/';
+                $config['allowed_types']        = 'jpeg|jpg|png|mp4|mkv|avi|wmv|mov';
+                $this->load->library('upload', $config);
+			
+						
+		        if ( ! $this->upload->do_upload('openImage'))
+                {		
+					if ( ! $this->upload->do_upload('openVideo'))
+					{		
+						if ($post['comment'] != "")
+						{
+							$this->Model->insert_post_group($this->session->userdata('myusername'),$hashtaglist,$mentionuserlist,$postingan,0,1,1,$this->session->userdata('usergroup'));
+						}
+					}
+					else
+					{
+						$te = $this->upload->data();
+						$namafile = $te["file_name"];
+						$this->Model->insert_post_group($this->session->userdata('myusername'),$hashtaglist,$mentionuserlist,$postingan,$namafile,1,1,$this->session->userdata('usergroup'));
+					}
+                }
+                else
+                {
+					$te = $this->upload->data();
+					$namafile = $te["file_name"];
+					$this->Model->insert_post_group($this->session->userdata('myusername'),$hashtaglist,$mentionuserlist,$postingan,$namafile,1,1,$this->session->userdata('usergroup'));
+                }
+				redirect('Welcome/goto_group_member');
+		}
+	}
 	public function group_manage()
 	{ //mengelola grup
 		$post = $this->input->post();
@@ -845,14 +914,25 @@ class Welcome extends CI_Controller {
                 }
 				redirect('Welcome/goto_group');
 		}
+		else if(isset($_POST['cancel_request'])){
+			$this->Model->delete_request_group($post['id_user']);
+			redirect('Welcome/goto_group');
+		}
 		else if (isset($_POST['confirmgroupreq']))
 		{
 			$idgroup = $post['idgroup'];
 			$allreq = $this->session->userdata("temprequest");
-			foreach($allreq as $row)
-			{
-				$this->Model->insert_request_group($this->session->userdata("myusername"),$idgroup,$row);
-			}
+			
+			
+				foreach($allreq as $row)
+				{
+					$already_request = $this->Model->select_request_group($row,$idgroup);
+					if($already_request == null)
+					{
+						$this->Model->insert_request_group($this->session->userdata("myusername"),$idgroup,$row);
+					}
+				}
+			
 			$this->session->unset_userdata("temprequest");
 			$this->session->set_flashdata("scsmsg","Your request has been sent.");
 			redirect("Welcome/goto_group");
@@ -876,7 +956,7 @@ class Welcome extends CI_Controller {
 			}
 			else
 			{
-				$this->session->set_flashdata("errmsg",$this->upload->display_errors());
+				$this->Model->update_group($idgroup,$groupname,$post["gbr_group"],$caption);
 			}
 			redirect("Welcome/goto_group");
 		}

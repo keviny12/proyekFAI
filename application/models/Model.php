@@ -61,6 +61,7 @@ class Model extends CI_Model {
 				$data = array(
 					'id_user' => $row,
 					'id_subject' => $id_user,
+
 					'id_group' => "none",
 					'type' => "mention",
 					'status' => 0,
@@ -104,7 +105,7 @@ class Model extends CI_Model {
 		return $result->result();
 	}
 	
-	function insert_post_group($id_user,$id_mention,$caption,$attach,$suka,$jum_comment,$idgroup){
+	function insert_post_group($id_user,$hastagtext,$id_mention,$caption,$attach,$suka,$jum_comment,$idgroup){
 		$data = array(
 			'id_user' => $id_user,
 			'text' => $caption,
@@ -376,6 +377,11 @@ class Model extends CI_Model {
 		$this->db->update('user',$data);
 	}
 	
+	function delete_request_group($id){
+		$this->db->where("id_requested",$id);
+		$this->db->delete('group_request');
+	}
+	
 	function active_on($id){
 		$this->db->where("username",$id);
 		$data = array(
@@ -523,6 +529,16 @@ class Model extends CI_Model {
 		$this->db->from("friend_request f");
 		$this->db->where("f.id_requester",$username);
 		$this->db->where("f.id_requested",$friend);
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function select_request_group($username,$group){
+		//cek permintaan apa ada
+		$this->db->select("*");
+		$this->db->from("group_request g");
+		$this->db->where("g.id_requested",$username);
+		$this->db->where("g.id_group",$group);
 		$result = $this->db->get();
 		return $result->result();
 	}
@@ -882,6 +898,16 @@ class Model extends CI_Model {
 		$this->db->from("group_request gr");
 		$this->db->join("group_social gs","gs.id_group = gr.id_group");
 		$this->db->where("gr.id_requested",$username);
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function select_group_permission_show($idgroup)
+	{
+		$this->db->select("*");
+		$this->db->from("group_request gr");
+		$this->db->join("user u ","gr.id_requested = u.username");
+		$this->db->where("gr.id_group",$idgroup);
 		$result = $this->db->get();
 		return $result->result();
 	}

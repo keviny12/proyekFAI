@@ -130,22 +130,26 @@
 			
 			//menambahkan waktu
 		});
-		$('.editposting').slideUp();
-		
-		$(".editmypost").click(function(){
-			var id_post = $(this).attr('id');
-			$('.'+id_post).slideToggle();
+		$('.reaction').slideUp();
+		$('.report-field').slideUp();
+		$('.reactchoose').click(function(){
+			var title = $(this).attr('value');
+			$('#'+title).slideToggle();
+		});
+		$('.reportpost').click(function(){
+			var title = $(this).attr('value');
+			title = title.split("_");
+			$('.report'+title[0]).slideToggle();
 		});
 		
-		$(".deletepost").click(function(){
-			var deletemypost = confirm('Are you sure ?');
-			var id_post = $(this).attr('id');
-			if(deletemypost)
-			{
-				$.post("<?php echo base_url(); ?>"+'index.php/Welcome/delete_post',{idpost:id_post},function(value){				
-					window.location = "<?php echo base_url(); ?>"+'index.php/Welcome/profile';
-				});
-			}
+		$('.emo').click(function(){
+			var myemo = $(this).attr('value');
+			var idpost = $(this).attr('id');
+			
+			$.post("<?php echo base_url(); ?>"+'index.php/Welcome/add_emo',{simpanpost:idpost,simpanemo:myemo},function(value){				
+					window.location = "<?php echo base_url(); ?>"+'index.php/Welcome/login_page';
+			});
+			
 		});
 	});
 </script>
@@ -244,7 +248,7 @@
               <h1 class="page-header"><?php echo $row->group_name; ?></h1>
               <div class="row">
                 <div class="col-md-4 profilepicture">
-                  <img style="height:200px;"src=<?php echo base_url("gpicture/".$row->group_img);?> class="img-thumbnail"  alt="">        
+                  <img style="height:200px;"src=<?php echo base_url("gpicture/".$row->group_img); ?> class="img-thumbnail"  alt="">        
 				  <?php  form_upload('gpicture','asdasd',' class="ppicture" ');?><hr><br>
                    
                 </div>
@@ -258,7 +262,7 @@
 				  <br>
 				  <button id="btn-changeprofile" type="button" class="btn btn-default submit">Change Profile</button>
 				  <button id="btn-addmember" type="button" class="btn btn-default submit">Add New Member</button>
-         
+					
                 </div>
               </div>
 			  <div class="row" id="successmsg">
@@ -267,6 +271,7 @@
               <div class="row" id="addmember-ui">
                 <strong style="font-size: 16pt">Select friends to add :</strong><br><br>
                 <div class="col-md-8" id="friends-toadd">
+				
                   <?php
                     foreach ($myfriends as $row)
                 		{
@@ -281,6 +286,7 @@
                 <div class="col-md-8">
                   <strong style="font-size: 16pt">Edit Group Profile</strong><br><br>
                   <?php foreach ($othergroup as $row) { ?>
+				  <?php echo form_hidden('gbr_group',$row->group_img); ?>
                   <strong>Group Picture</strong><hr style="margin-top:2%;"><?php echo form_upload("editgrouppicture","class='form-control'"); ?><br><br>
                   <strong>Group Name</strong><hr style="margin-top:2%;"><?php echo form_input("editgroupname",$row->group_name,"class='form-control'"); ?><br><br>
                   <strong>Description</strong><hr style="margin-top:2%;"><?php echo form_textarea("editdescription",$row->caption,"class='form-control'"); ?><br><br>
@@ -333,8 +339,9 @@
                        </div>
                        <div class="pointer-border"></div>
                      </div>
-                     <p class="post-actions"><span class="editmypost reactchoose" id=<?php  echo $row->id_post; ?> >Edit</span> | <a href="profile" class="deletepost" id=<?php echo $row->id_post;?> >Delete</a><span style="margin-left:35%;">
-					 <?php
+                     <p class="post-actions"><span class="reactchoose" value=<?php echo $row->id_post ?>>What do you feel ?</span> | <span class="reportpost" value=<?php echo $row->id_post.'_'.$row->username; ?>>Report</span> <span style="margin-left:21%;">
+				
+				 <?php
 						
 						 $like=0;
 						 $love=0;					 
@@ -383,27 +390,38 @@
 					 <?php echo $angry; ?> <img src=<?php echo base_url("emo/angry.png");?> width=20>
 					 &nbsp;|&nbsp;<?php echo $count; ?> Likes</span></p>
                      
-                     <div class="comments">
-					  
-					  <div class="form-group editposting <?php echo $row->id_post; ?>" style="padding:10px;">
-					  <?php echo form_open_multipart('Welcome/edit_post'); ?>
-					  <p>
-                        <input type="text" class="form-control" id=<?php echo $row->username; ?> name='edittext' placeholder="change caption here">
-						<div class="btn-toolbar">
-						
-						<input type="hidden" name="idpost" value=<?php echo $row->id_post;?> >
-						<input type="hidden" name="textpast" value=<?php echo $row->text;?> >
-						<input type="hidden" name="postimg" value=<?php echo $row->attach;?> >
-						
-						<input type="file" name="openImage" id="openImage"  style="display:none;" accept="image/*">
-						<button type="button" name="inputImage" id="inputImage" class="btn btn-default"><i class="fa fa-file-image-o"></i>Image</button>
-						<input type="file" name="openVideo" id="openVideo"  style="display:none;" accept="video/*">
-						<button type="button" name="inputVideo" id="inputVideo" class="btn btn-default"><i class="fa fa-file-video-o"></i>Video</button><button style="margin-left:62%;" class="btn btn-default edit submit">Edit</button>
-						</p>
-						
+					 <div class="comment-form ">
+					
+                       <form class="form-inline">
+					   
+					   <div class="reaction" id=<?php echo $row->id_post ?>><img src=<?php echo base_url("emo/like.png");?> class="emo" value="like" id=<?php echo $row->id_post ?> width=40> <img src=<?php echo base_url("emo/love.png");?> class="emo" value="love" id=<?php echo $row->id_post ?> width=40> <img src=<?php echo base_url("emo/laugh.png");?> id=<?php echo $row->id_post ?> class="emo" value="laugh" width=40> <img src=<?php echo base_url("emo/wow.png");?> id=<?php echo $row->id_post ?> class="emo" value="wow" width=40> <img src=<?php echo base_url("emo/sad.png");?> class="emo" id=<?php echo $row->id_post ?> value="sad" width=40> <img src=<?php echo base_url("emo/angry.png");?> class="emo" value="angry"  id=<?php echo $row->id_post ?> width=40> 
 						</div>
-						  <?php echo form_close(); ?>
-					  </div>
+								
+                        <div class="form-group">
+                          <input type="text" class="form-control <?php $postnow = $row->id_post; echo $row->id_post;?>" id=<?php echo $row->username; ?> name=<?php echo $row->id_post?> placeholder="enter comment">
+                        </div>
+							<button type="button" id=<?php echo $row->id_post;?> class="btn btn-default add">Add</button>
+							
+						</form>	
+						<div class="report-field report<?php $postnow = $row->id_post; echo $row->id_post;?>">
+						<?php echo form_open_multipart('Welcome/report'); ?>
+						<p>
+						<div class="form-group">
+							<strong>Why do you report it?</strong><br><br>
+							<input type="radio" id=<?php echo $row->username; ?> name='myreport' value="Spam Content">Spam Content<br>
+							<input type="radio" id=<?php echo $row->username; ?> name='myreport'value="Sexual Content">Sexual Content<br> 
+							<input type="radio" id=<?php echo $row->username; ?> name='myreport' value="Abusive Content">Abusive Content<br>
+						</div> 
+							<input type="hidden" name="idpost" value=<?php echo $row->id_post; ?> >
+							<input type="hidden" name="idposted" value=<?php echo $row->id_user; ?> >
+							
+							<button class="btn btn-default report">Report</button><br><br>
+						<?php echo form_close(); ?>	
+						</div>
+					
+						
+                     </div>
+                     <div class="comments">
 						
 						
 					 <!-- data di for terus dipilah dengan if milik siapa komen tsb -->
@@ -443,6 +461,21 @@
                 <div class="clearfix"></div>
                 <a class="btn btn-primary mybutton" href="#">View All Members</a>
               </div>
+            </div>
+        </div>
+		
+		 <div class="col-md-4">
+            <div class="panel panel-default friends">
+              <div class="panel-heading">
+                <h3 class="panel-title">Requested Persons</h3>
+              </div>
+              <div class="panel-body">
+                <ul>
+				  <?php if($groupmembers != null) { foreach ($group_permission_user as $row){  ?>
+					<?php echo form_open('Welcome/group_manage'); echo form_hidden('id_user',$row->id_requested); ?>
+                    <li><a href=<?php echo "goto_mention/".$row->username;?> class="thumbnail"><img src=<?php echo base_url("ppicture/".$row->pp);?> style="width:100px;height:100px;" alt=""><button name="cancel_request" class="btn btn-danger btn-block cancel_request"><i class="fa fa-close"></i> Cancel Request</button></a></li>
+					    <?php echo form_close(); }} ?>
+                </ul>
             </div>
         </div>
       </div>
