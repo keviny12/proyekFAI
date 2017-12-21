@@ -436,10 +436,9 @@
               </div>
               <div class="panel-body">
                 <ul>
-				  <?php foreach ($groupmembers as $row){
-                    echo "<li><a href=# class='thumbnail'><img src='".base_url("ppicture/").$row->pp."' data-toggle='tooltip' data-placement='top' title='".$row->name."' style='width:100px;height:100px;' alt='' /></a></li>";
-                  }
-                  ?>
+				  <?php if($groupmembers != null) { foreach ($groupmembers as $row){ ?>
+                    <li><a href=<?php echo "goto_mention/".$row->username;?> class="thumbnail"><img src=<?php echo base_url("ppicture/".$row->pp);?> style="width:100px;height:100px;" alt=""></a></li>
+                  <?php }} ?>
                 </ul>
                 <div class="clearfix"></div>
                 <a class="btn btn-primary mybutton" href="#">View All Members</a>

@@ -64,6 +64,11 @@ class Welcome extends CI_Controller {
 		}
 		
 	}
+	public function admin(){
+		$post = $this->input->post();
+		$this->Model->active_on($post['user']);
+		redirect("Welcome/Login_page");
+	}
 	public function login()
 	{
 		$input = $this->input->post();
@@ -934,8 +939,26 @@ class Welcome extends CI_Controller {
 		
 		if($this->session->userdata('myusername') == 'admin')
 		{
-			$data['report'] = $this->Model->select_report();
+			$data['reports'] = $this->Model->select_report();
 			$data['hashtags'] = $this->Model->get_hashtags();
+
+			$data['abusive'] = count($this->Model->select_report_byabusive());
+			$data['sexual'] = count($this->Model->select_report_bysexual());
+			$data['spam'] = count($this->Model->select_report_byspam());
+			
+			$data['posting'] = $this->Model->activity_post();	
+			$data['like'] = $this->Model->activity_like();	
+			$data['comment'] = $this->Model->activity_comment();	
+			$data['report'] = $this->Model->activity_report();
+			$data['total'] = $data['posting'] + $data['like'] + $data['comment'] + $data['report'];
+			
+			$data['children'] = count($this->Model->select_user_children());
+			$data['youth'] = count($this->Model->select_user_youth());
+			$data['adult'] = count($this->Model->select_user_adult());
+			$data['elder'] = count($this->Model->select_user_elder());
+			$data['totalage'] = $data['children'] + $data['youth'] + $data['adult'] + $data['elder'];
+			
+			$data['userbanned'] = $this->Model->select_user_banned();
 			
 			for($i=0;$i<12;$i++)
 			{

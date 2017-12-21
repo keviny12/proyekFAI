@@ -319,38 +319,12 @@
               <div class="panel-body">
                 <ul>
                    <?php if($friend != null){ foreach($friend as $row){?>
-                  <li><a href="otherprofile" class="thumbnail"><img src=<?php echo base_url("ppicture/".$row[0]->pp);?> alt=""></a></li>
+                  <li><a href=<?php echo "goto_mention/".$row[0]->username;?> class="thumbnail"><img src=<?php echo base_url("ppicture/".$row[0]->pp);?> style="width:100px;height:100px;" alt=""></a></li>
 				 <?php }}?>
 				 
                 </ul>
                 <div class="clearfix"></div>
                 <a class="btn btn-primary mybutton" href="#">View All Friends</a>
-              </div>
-            </div>
-            <div class="panel panel-default groups">
-              <div class="panel-heading">
-                <h3 class="panel-title">Latest Groups</h3>
-              </div>
-              <div class="panel-body">
-                <div class="group-item">
-                  <img src="img/group.png" alt="">
-                  <h4><a href="#" class="">Sample Group One</a></h4>
-                  <p>This is a paragraph of intro text, or whatever I want to call it.</p>
-                </div>
-                <div class="clearfix"></div>
-                <div class="group-item">
-                  <img src="img/group.png" alt="">
-                  <h4><a href="#" class="">Sample Group Two</a></h4>
-                  <p>This is a paragraph of intro text, or whatever I want to call it.</p>
-                </div>
-                <div class="clearfix"></div>
-                <div class="group-item">
-                  <img src="img/group.png" alt="">
-                  <h4><a href="#" class="">Sample Group Three</a></h4>
-                  <p>This is a paragraph of intro text, or whatever I want to call it.</p>
-                </div>
-                <div class="clearfix"></div>
-                <a href="#" class="btn btn-primary mybutton">View All Groups</a>
               </div>
             </div>
           </div>

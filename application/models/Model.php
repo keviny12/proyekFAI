@@ -101,7 +101,7 @@ class Model extends CI_Model {
 		$this->db->select("*");
 		$this->db->from("hashtag");
 		$result = $this->db->get();
-		return $result->result_array();
+		return $result->result();
 	}
 	
 	function insert_post_group($id_user,$id_mention,$caption,$attach,$suka,$jum_comment,$idgroup){
@@ -376,6 +376,15 @@ class Model extends CI_Model {
 		$this->db->update('user',$data);
 	}
 	
+	function active_on($id){
+		$this->db->where("username",$id);
+		$data = array(
+			'active' => 1,
+		);
+		$this->db->update('user',$data);
+	}
+	
+	
 	function user_banned($idreport,$username){
 		//$query = "update user set password = '".$pass."',confirmpassword = '".$cpass."' where username = '".$username."'";
 		
@@ -430,6 +439,7 @@ class Model extends CI_Model {
 		$this->db->where("id_group_request",$result->row()->id_group_request);
 		$this->db->delete('group_request');
 	}
+	
 	
 	function delete_report($idreport){
 		$this->db->where("id_report",$idreport);
@@ -498,6 +508,15 @@ class Model extends CI_Model {
 		return $result->result();
 	}
 	
+	function select_user_banned(){
+		//$query = "select * from user";
+		$this->db->select("*");
+		$this->db->from("user");
+		$this->db->where("active",0);
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
 	function select_request($username,$friend){
 		//cek permintaan apa ada
 		$this->db->select("*");
@@ -540,6 +559,33 @@ class Model extends CI_Model {
 		$this->db->select("*");
 		$this->db->from("user");
 		$this->db->where("month",$month);
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function select_report_byabusive(){
+		//mencari semua user yang bukan user aktif
+		$this->db->select("*");
+		$this->db->from("report");
+		$this->db->where("note","Abusive Content");
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function select_report_bysexual(){
+		//mencari semua user yang bukan user aktif
+		$this->db->select("*");
+		$this->db->from("report");
+		$this->db->where("note","Sexual Content");
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function select_report_byspam(){
+		//mencari semua user yang bukan user aktif
+		$this->db->select("*");
+		$this->db->from("report");
+		$this->db->where("note","Spam Content");
 		$result = $this->db->get();
 		return $result->result();
 	}
@@ -742,6 +788,46 @@ class Model extends CI_Model {
 		return $result->result();
 	}
 	
+	function select_user_children(){
+		//$query = "select * from user";
+		$this->db->select("*");
+		$this->db->from("user");
+		$this->db->where("2017 - YEAR(BIRTH) > ",-1);
+		$this->db->where("2017 - YEAR(BIRTH) < ",14);
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function select_user_youth(){
+		//$query = "select * from user";
+		$this->db->select("*");
+		$this->db->from("user");
+		$this->db->where("2017 - YEAR(BIRTH) > ",13);
+		$this->db->where("2017 - YEAR(BIRTH) < ",26);
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function select_user_adult(){
+		//$query = "select * from user";
+		$this->db->select("*");
+		$this->db->from("user");
+		$this->db->where("2017 - YEAR(BIRTH) > ",25);
+		$this->db->where("2017 - YEAR(BIRTH) < ",51);
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function select_user_elder(){
+		//$query = "select * from user";
+		$this->db->select("*");
+		$this->db->from("user");
+		$this->db->where("2017 - YEAR(BIRTH) > ",50);
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	
 	function select_group_byidgroup($groupid){
 		//$query = "select * from user";
 		$this->db->select("*");
@@ -785,6 +871,7 @@ class Model extends CI_Model {
 		$this->db->from("user u");
 		$this->db->join("group_member gm","u.username = gm.id_user");
 		$this->db->where("id_group",$idgroup);
+		$this->db->group_by("u.username");
 		$result = $this->db->get();
 		return $result->result();
 	}
@@ -870,6 +957,26 @@ class Model extends CI_Model {
 
         return $query->result();
     }
+	
+	public function activity_post()
+	{
+		return $this->db->count_all("post");
+	}
+	
+	public function activity_like()
+	{
+		return $this->db->count_all("disukai");
+	}
+	
+	public function activity_comment()
+	{
+		return $this->db->count_all("comment");
+	}
+	
+	public function activity_report()
+	{
+		return $this->db->count_all("report");
+	}
 	
 	public function record_count_contain($keyword)
     {
