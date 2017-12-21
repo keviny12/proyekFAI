@@ -20,6 +20,7 @@
 		$("#changeprofile-ui").hide();
 		$("#btn-changeprofile").click(function(){
 		  $("#changeprofile-ui").show();
+		  $("#successmsg").hide();
 		});
 	});
 	</script>
@@ -235,6 +236,7 @@
                 <div class="col-md-8">
                   <strong style="font-size: 16pt">Edit Profile</strong><br><br>
                   <?php foreach ($mydata as $row) { ?>
+				  <?php echo form_hidden('gbr_group',$row->pp); ?>
                   <strong>Profile Picture</strong><hr style="margin-top:2%;"><?php echo form_upload("editprofilepicture","class='form-control'"); ?><br><br>
                   <strong>First Name</strong><hr style="margin-top:2%;"><?php $name = explode(" ",$row->name); echo form_input("editfirstname",$name[0],"class='form-control'"); ?><br><br>
                   <strong>Last Name</strong><hr style="margin-top:2%;"><?php echo form_input("editlastname",$name[1],"class='form-control'"); ?><br><br>
@@ -242,7 +244,6 @@
                   <strong>Address</strong><hr style="margin-top:2%;"><?php echo form_input("editaddress",$row->alamat,"class='form-control'"); ?><br><br>
                   <strong>Email</strong><hr style="margin-top:2%;"><?php echo form_input("editemail",$row->email,"class='form-control'"); ?><br><br>
                   <strong>Gender</strong><hr style="margin-top:2%;"><?php echo form_input("editgender",$row->gender,"class='form-control'"); ?><br><br>
-                  <div id="errmsg"><strong><?php echo $this->session->flashdata("errmsg");?></strong></div><br>
                   <button name="savechanges" type="submit" class="btn btn-default submit">Save Changes</button>
                   <?php }?>
 

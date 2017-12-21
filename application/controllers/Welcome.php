@@ -512,7 +512,6 @@ class Welcome extends CI_Controller {
 			else
 			{
 				$this->Model->update_user($username,$firstname." ".$lastname,$email,$birth,$address,$gender,$post['gbr_group']);
-				//$this->session->set_flashdata("errmsg",$this->upload->display_errors());
 			}
 			redirect("Welcome/profile");
 		}
