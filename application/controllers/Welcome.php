@@ -13,6 +13,7 @@ class Welcome extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->library('pagination');
 		$this->load->library('cart');
+		$this->load->library('email');
 		
 	}
 	
@@ -223,6 +224,76 @@ class Welcome extends CI_Controller {
 		
 			
 		}
+		else if(isset($_POST['email_ver'])){
+
+		//$id = $this->user->getId('yoelvndr');
+		$this->load->library('email');
+		$config['sendgrid'] = array(
+			'protocol' => 'smtp',
+			'smtp_host' => 'ssl://smtp.sendgrid.net',
+			'smtp_user' => 'apikey',
+			'smtp_pass' => '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',
+			'smtp_port' => 465,
+			'crlf' => "\r\n",
+			'mailtype' => 'html',
+			'newline' => "\r\n"
+		);
+		$this->email->initialize($config['sendgrid']);
+
+		$subject = 'Verify Email';
+		$message = '<a href='.site_url('Cont/acceptverify/').'>Click Here To Verify</a>';
+
+		// Get full html:
+		$body = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+		<html xmlns="http://www.w3.org/1999/xhtml">
+		<head>
+			<meta http-equiv="Content-Type" content="text/html; charset=' . strtolower(config_item('charset')) . '" />
+			<title>' . html_escape($subject) . '</title>
+			<style type="text/css">
+				body {
+					font-family: Arial, Verdana, Helvetica, sans-serif;
+					font-size: 16px;
+				}
+			</style>
+		</head>
+		<body>
+		' . $message . '
+		</body>
+		</html>';
+		//$email=$this->user->getEmail('yoelvndr');
+		$this->email->from('no-reply@mail.josefchristian.me', 'Encekbook Social Media');
+		$this->email->to('yoelisnotyul@gmail.com');
+		$this->email->subject($subject);
+
+		$this->email->message($body);
+		$this->email->send(false);
+
+		//Pengecekan Terkirim (saat mengirim harus menambahkan paramenter false saat memanggil send)
+		//echo $this->email->print_debugger();
+		
+				
+				
+					
+			$this->Model->insert_user(
+				$this->session->userdata("username"),
+				$this->session->userdata("password"),
+				$this->session->userdata("forgot"),
+				$this->session->userdata("name"),
+				$this->session->userdata("email"),
+				$this->session->userdata("birth"),
+				$this->session->userdata("alamat"),
+				$this->session->userdata("gender"),
+				$this->session->userdata("kodegbr")	
+			);
+			
+			$this->session->sess_destroy();
+			echo "<script type='text/javascript'>";
+			echo "alert('Register Success')";
+			echo "</script>";
+			
+			$this->load->view('index');
+			
+		}
 		else if(isset($_POST['register'])){
 			//cek apakah username ada
 			$data['data-user'] = $this->Model->select_user_byusername($post['user']);
@@ -236,21 +307,17 @@ class Welcome extends CI_Controller {
 			{
 				if($post['pass'] == $post['cpass'])
 				{
-					$user = $post['user'];
-					$pass = $post['pass'];
-					$forgot = $post['forgotpass'];
-					$name = $this->session->userdata("name");
-					$email = $this->session->userdata("email");
-					$birth = $this->session->userdata("birth");
-					$alamat = $this->session->userdata("alamat");
-					$gender = $this->session->userdata("gender");
-					$pp = $this->session->userdata("file_name");
-					$this->Model->insert_user($user,$pass,$forgot,$name,$email,$birth,$alamat,$gender,$pp);
-					$this->session->sess_destroy();
-					echo "<script type='text/javascript'>";
-					echo "alert('Register Success')";
-					echo "</script>";
-					$this->load->view('index');
+
+					$this->session->set_userdata("username",$post['user']);
+					$this->session->set_userdata("password",$post['pass']);
+					$this->session->set_userdata("forgot",$post['forgotpass']);
+
+					//$this->Model->insert_user($user,$pass,$forgot,$name,$email,$birth,$alamat,$gender,$pp);
+					//$this->session->sess_destroy();
+					//echo "<script type='text/javascript'>";
+					//echo "alert('Register Success')";
+					//echo "</script>";
+					$this->load->view('register3');
 				}
 				else
 				{
@@ -846,6 +913,8 @@ class Welcome extends CI_Controller {
 				}
 			}
 			
+			
+			
 			$counter=0;
 			$data["friend"]=null;
 			$frienddata = $this->Model->select_alluser();
@@ -867,7 +936,15 @@ class Welcome extends CI_Controller {
 		{
 			$data['report'] = $this->Model->select_report();
 			$data['hashtags'] = $this->Model->get_hashtags();
+			
+			for($i=0;$i<12;$i++)
+			{
+				$data['userchart'][$i] = count($this->Model->select_user_bydate($i));
+			}
+			
+			
 			$this->load->view('admin',$data);
+
 		}
 		else
 		{

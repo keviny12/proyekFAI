@@ -181,15 +181,61 @@
             <div class="groups">
               <h1 class="page-header">Administrator</h1>
 				<p><strong style="font-size:16pt;">User Chart</strong></p><br>
-				<canvas id="myChart" width="400" height="400"></canvas>
+				<canvas id="userChart" width="400" height="400"></canvas>
+				<?php 
+				foreach($userchart as $row){
+
+
+				}?>
 				<script>
-					var ctx = document.getElementById("myChart");
-					var myChart = new Chart(ctx, {
+					var ctx = document.getElementById("userChart");
+					var userChart = new Chart(ctx, {
 						type: 'line',
 						data: {
 							labels: ["January","February","March","April","May","June","July","September","October","November","December"],
 							datasets: [{
 								label: 'Registered users',
+								data: [1, 1, 1, 1, 1, 1, 1, 1, 15, 28, 42],
+								backgroundColor: [
+									'rgba(255, 99, 132, 0.2)',
+									'rgba(54, 162, 235, 0.2)',
+									'rgba(255, 206, 86, 0.2)',
+									'rgba(75, 192, 192, 0.2)',
+									'rgba(153, 102, 255, 0.2)',
+									'rgba(255, 159, 64, 0.2)'
+								],
+								borderColor: [
+									'rgba(255,99,132,1)',
+									'rgba(54, 162, 235, 1)',
+									'rgba(255, 206, 86, 1)',
+									'rgba(75, 192, 192, 1)',
+									'rgba(153, 102, 255, 1)',
+									'rgba(255, 159, 64, 1)'
+								],
+								borderWidth: 1
+							}]
+						},
+						options: {
+							scales: {
+								yAxes: [{
+									ticks: {
+										beginAtZero:true
+									}
+								}]
+							}
+						}
+					});
+				</script><br><br>
+				<p><strong style="font-size:16pt;">Hashtag Chart</strong></p><br>
+				<canvas id="hashtagChart" width="400" height="400"></canvas>
+				<script>
+					var ctx = document.getElementById("hashtagChart");
+					var hashtagChart = new Chart(ctx, {
+						type: 'bar',
+						data: {
+							labels: ["January","February","March","April","May"],
+							datasets: [{
+								label: 'Number of hashtags',
 								data: [1, 1, 1, 1, 1, 1, 1, 1, 15, 28, 42],
 								backgroundColor: [
 									'rgba(255, 99, 132, 0.2)',

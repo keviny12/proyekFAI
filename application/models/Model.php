@@ -18,7 +18,10 @@ class Model extends CI_Model {
 			'birth' => $birth,
 			'alamat' => $alamat,
 			'gender' => $gender,
-			'pp' => $pp
+			'pp' => $pp,
+			'active'=>1,
+			'date' =>	date("Y-m-d h:i:sa"),
+			'month' =>	date("m")
 		);
 		
 		$this->db->insert('user',$data);
@@ -504,6 +507,7 @@ class Model extends CI_Model {
 		$result = $this->db->get();
 		return $result->result();
 	}
+
 	
 	function select_request_me($username){
 		//permintaan pertemanan user yg aktif
@@ -527,6 +531,15 @@ class Model extends CI_Model {
 		$this->db->select("*");
 		$this->db->from("user");
 		$this->db->where_not_in("username",$id);
+		$result = $this->db->get();
+		return $result->result();
+	}
+	
+	function select_user_bydate($month){
+		//mencari semua user yang bukan user aktif
+		$this->db->select("*");
+		$this->db->from("user");
+		$this->db->where("month",$month);
 		$result = $this->db->get();
 		return $result->result();
 	}
