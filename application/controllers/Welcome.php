@@ -232,51 +232,52 @@ class Welcome extends CI_Controller {
 		else if(isset($_POST['email_ver'])){
 
 		//$id = $this->user->getId('yoelvndr');
-		$this->load->library('email');
-		$config['sendgrid'] = array(
-			'protocol' => 'smtp',
-			'smtp_host' => 'ssl://smtp.sendgrid.net',
-			'smtp_user' => 'apikey',
-			'smtp_pass' => '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',
-			'smtp_port' => 465,
-			'crlf' => "\r\n",
-			'mailtype' => 'html',
-			'newline' => "\r\n"
-		);
-		$this->email->initialize($config['sendgrid']);
-
-		$subject = 'Verify Email';
+		//$this->load->library('email');
+		//$config = array(
+		//	'protocol' => 'smtp',
+		//	'smtp_host' => 'xxx',
+		//	'smtp_user' => 'xxx',
+		//	'smtp_pass' => 'xxx',
+		//	'smtp_port' => 25,
+		//	'crlf' => "\r\n",
+		//	'mailtype' => 'html',
+		//	'newline' => "\r\n"
+		//);
+		//$this->email->initialize($config);
+        //
+		//$subject = 'Verify Email';
 		$message = '<a href='.site_url('Cont/acceptverify/').'>Click Here To Verify</a>';
-
-		// Get full html:
-		$body = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-		<html xmlns="http://www.w3.org/1999/xhtml">
-		<head>
-			<meta http-equiv="Content-Type" content="text/html; charset=' . strtolower(config_item('charset')) . '" />
-			<title>' . html_escape($subject) . '</title>
-			<style type="text/css">
-				body {
-					font-family: Arial, Verdana, Helvetica, sans-serif;
-					font-size: 16px;
-				}
-			</style>
-		</head>
-		<body>
-		' . $message . '
-		</body>
-		</html>';
-		
-		//$email=$this->user->getEmail('yoelvndr');
-		$this->email->from('Unsos.herobo.com', 'Unsos Contact Center');
-		$this->email->to($this->session->userdata("email"));
-		$this->email->subject($subject);
-
-		$this->email->message($body);
-		$this->email->send(false);
+        //
+		//// Get full html:
+		//$body = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+		//<html xmlns="http://www.w3.org/1999/xhtml">
+		//<head>
+		//	<meta http-equiv="Content-Type" content="text/html; charset=' . strtolower(config_item('charset')) . '" />
+		//	<title>' . html_escape($subject) . '</title>
+		//	<style type="text/css">
+		//		body {
+		//			font-family: Arial, Verdana, Helvetica, sans-serif;
+		//			font-size: 16px;
+		//		}
+		//	</style>
+		//</head>
+		//<body>
+		//' . $message . '
+		//</body>
+		//</html>';
+		//
+		////$email=$this->user->getEmail('yoelvndr');
+		//$this->email->from('Unsos.herobo.com', 'Unsos Contact Center');
+		//$this->email->to($this->session->userdata("email"));
+		//$this->email->subject($subject);
+        //
+		//$this->email->message($body);
+		//$this->email->send(false);
 		
 		//Pengecekan Terkirim (saat mengirim harus menambahkan paramenter false saat memanggil send)
 		//echo $this->email->print_debugger();
-		if($this->email->send()){
+		$header = 'From: Unsos Service Management <unsos.herobo.com>' . "\r\n";
+		if(mail($this->session->userdata("email"), 'My Subject', $message,$header)){
 				$this->Model->insert_user(
 				$this->session->userdata("username"),
 				$this->session->userdata("password"),
