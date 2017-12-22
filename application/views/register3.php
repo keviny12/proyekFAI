@@ -221,7 +221,7 @@
 	<div class="login-container">
 			<div id="breadcrumb">Register > MyData > MyAccount <img src=<?php echo base_url("img/logo.png");?> height=20 class="logo col-sm-2" alt=""></div>
             <div id="output"></div>
-            <div class="avatar"><img id="avatar-pic" src=<?php echo base_url("ppicture/".$this->session->userdata('file_name')."");?> height=100 width=100 class="picture col-sm-2" alt="">Hi, <?php echo $this->session->userdata('fname');?></div>
+            <div class="avatar"><img id="avatar-pic" src=<?php echo base_url("ppicture/".$this->session->userdata('kodegbr')."");?> height=100 width=100 class="picture col-sm-2" alt="">Hi, <?php echo $this->session->userdata('fname');?></div>
             <div class="form-box">
              <?php echo form_open_multipart('Welcome/Register'); ?>    
 					<button name="email_ver" class="btn btn-info btn-block login" type="submit">Email Verification</button><br>

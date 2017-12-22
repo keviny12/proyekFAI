@@ -171,9 +171,9 @@ class Welcome extends CI_Controller {
 	public function register()
 	{
 		$post = $this->input->post();
-
+		
 		if(isset($_POST['upload'])){
-			$kode = $this->session->userdata("kodegbr");
+			$kode = strtoupper(substr($this->session->userdata('fname'),0,1).substr($this->session->userdata('lname'),0,1));
 			$urutan = $this->Model->get_urutan($kode) + 1;
 			$config['upload_path'] = './ppicture/';
 			$config['allowed_types'] = 'gif|jpg|png';
@@ -185,7 +185,7 @@ class Welcome extends CI_Controller {
 			{
 				$te = $this->upload->data();
 				$namafile = $te["file_name"];
-				$this->session->set_userdata('file_name',$namafile);
+				$this->session->set_userdata("kodegbr",$namafile);
 			}
 			else
 			{
@@ -207,8 +207,9 @@ class Welcome extends CI_Controller {
 					if($this->form_validation->run())
 					{
 						$sessiondata = array(
-							"kodegbr" => strtoupper(substr($post['fname'],0,1).substr($post['lname'],0,1)),
+							"kodegbr" => "user.png",
 							"fname" => $post['fname'],
+							"lname" => $post['lname'],
 							"name" => $post['fname']." ".$post['lname'],
 							"email" => $post['email'],
 							"birth" => $post['birth'],
@@ -216,10 +217,9 @@ class Welcome extends CI_Controller {
 							"gender" => $post['gender']
 						);
 						$this->session->set_userdata($sessiondata);
-						$this->load->view('register2');
 					
-						
-						
+						$this->load->view('register2');
+
 					}
 					else
 					{
@@ -232,54 +232,53 @@ class Welcome extends CI_Controller {
 		else if(isset($_POST['email_ver'])){
 
 		//$id = $this->user->getId('yoelvndr');
-		$this->load->library('email');
-		$config['sendgrid'] = array(
-			'protocol' => 'smtp',
-			'smtp_host' => 'ssl://smtp.sendgrid.net',
-			'smtp_user' => 'apikey',
-			'smtp_pass' => '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',
-			'smtp_port' => 465,
-			'crlf' => "\r\n",
-			'mailtype' => 'html',
-			'newline' => "\r\n"
-		);
-		$this->email->initialize($config['sendgrid']);
-
-		$subject = 'Verify Email';
+		//$this->load->library('email');
+		//$config = array(
+		//	'protocol' => 'smtp',
+		//	'smtp_host' => 'xxx',
+		//	'smtp_user' => 'xxx',
+		//	'smtp_pass' => 'xxx',
+		//	'smtp_port' => 25,
+		//	'crlf' => "\r\n",
+		//	'mailtype' => 'html',
+		//	'newline' => "\r\n"
+		//);
+		//$this->email->initialize($config);
+        //
+		//$subject = 'Verify Email';
 		$message = '<a href='.site_url('Cont/acceptverify/').'>Click Here To Verify</a>';
-
-		// Get full html:
-		$body = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-		<html xmlns="http://www.w3.org/1999/xhtml">
-		<head>
-			<meta http-equiv="Content-Type" content="text/html; charset=' . strtolower(config_item('charset')) . '" />
-			<title>' . html_escape($subject) . '</title>
-			<style type="text/css">
-				body {
-					font-family: Arial, Verdana, Helvetica, sans-serif;
-					font-size: 16px;
-				}
-			</style>
-		</head>
-		<body>
-		' . $message . '
-		</body>
-		</html>';
-		//$email=$this->user->getEmail('yoelvndr');
-		$this->email->from('no-reply@mail.josefchristian.me', 'Encekbook Social Media');
-		$this->email->to('yoelisnotyul@gmail.com');
-		$this->email->subject($subject);
-
-		$this->email->message($body);
-		$this->email->send(false);
-
+        //
+		//// Get full html:
+		//$body = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+		//<html xmlns="http://www.w3.org/1999/xhtml">
+		//<head>
+		//	<meta http-equiv="Content-Type" content="text/html; charset=' . strtolower(config_item('charset')) . '" />
+		//	<title>' . html_escape($subject) . '</title>
+		//	<style type="text/css">
+		//		body {
+		//			font-family: Arial, Verdana, Helvetica, sans-serif;
+		//			font-size: 16px;
+		//		}
+		//	</style>
+		//</head>
+		//<body>
+		//' . $message . '
+		//</body>
+		//</html>';
+		//
+		////$email=$this->user->getEmail('yoelvndr');
+		//$this->email->from('Unsos.herobo.com', 'Unsos Contact Center');
+		//$this->email->to($this->session->userdata("email"));
+		//$this->email->subject($subject);
+        //
+		//$this->email->message($body);
+		//$this->email->send(false);
+		
 		//Pengecekan Terkirim (saat mengirim harus menambahkan paramenter false saat memanggil send)
 		//echo $this->email->print_debugger();
-		
-				
-				
-					
-			$this->Model->insert_user(
+		$header = 'From: Unsos Service Management <unsos.herobo.com>' . "\r\n";
+		if(mail($this->session->userdata("email"), 'My Subject', $message,$header)){
+				$this->Model->insert_user(
 				$this->session->userdata("username"),
 				$this->session->userdata("password"),
 				$this->session->userdata("forgot"),
@@ -295,9 +294,13 @@ class Welcome extends CI_Controller {
 			echo "<script type='text/javascript'>";
 			echo "alert('Register Success')";
 			echo "</script>";
-			
 			$this->load->view('index');
-			
+		}
+		else
+		{
+			$this->load->view('register3');
+		}
+
 		}
 		else if(isset($_POST['register'])){
 			//cek apakah username ada
