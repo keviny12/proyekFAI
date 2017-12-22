@@ -268,19 +268,16 @@ class Welcome extends CI_Controller {
 		
 		//$email=$this->user->getEmail('yoelvndr');
 		$this->email->from('Unsos.herobo.com', 'Unsos Contact Center');
-		$this->email->to('yoelisnotyul@gmail.com');
+		$this->email->to($this->session->userdata("email"));
 		$this->email->subject($subject);
 
 		$this->email->message($body);
 		$this->email->send(false);
-
+		
 		//Pengecekan Terkirim (saat mengirim harus menambahkan paramenter false saat memanggil send)
 		//echo $this->email->print_debugger();
-		
-				
-				
-					
-			$this->Model->insert_user(
+		if($this->email->send()){
+				$this->Model->insert_user(
 				$this->session->userdata("username"),
 				$this->session->userdata("password"),
 				$this->session->userdata("forgot"),
@@ -296,9 +293,13 @@ class Welcome extends CI_Controller {
 			echo "<script type='text/javascript'>";
 			echo "alert('Register Success')";
 			echo "</script>";
-			
+			$this->load->view('index');
+		}
+		else
+		{
 			$this->load->view('register3');
-			
+		}
+
 		}
 		else if(isset($_POST['register'])){
 			//cek apakah username ada
