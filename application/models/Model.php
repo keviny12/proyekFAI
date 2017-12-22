@@ -105,6 +105,13 @@ class Model extends CI_Model {
 		return $result->result();
 	}
 	
+	function select_rep()
+	{
+		$this->db->select("*");
+		$this->db->from("rep");
+		$result = $this->db->get();
+		return $result->result();
+	}
 	function insert_post_group($id_user,$hastagtext,$id_mention,$caption,$attach,$suka,$jum_comment,$idgroup){
 		$data = array(
 			'id_user' => $id_user,
