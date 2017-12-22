@@ -89,6 +89,7 @@
   </head>
 	<script type="text/javascript" src="<?php echo base_url('js/script.js');?>"></script>
 <script type="text/javascript">
+	var show_url='';
 	$(document).ready(function(){
 		$(".contact > .chat").click(function(){
 			//ambil chat dari db
@@ -129,6 +130,15 @@
 			$(".chatnow"+index+" > .chat-text").val("");
 			
 			//menambahkan waktu
+		});
+		$("#openImage").click(function(){
+			clearInterval(show_url);
+			show_url = setInterval(function(){$("#value_upload").html($("#openImage").val());},100);
+		});
+		
+		$("#openVideo").click(function(){
+			clearInterval(show_url);
+			show_url = setInterval(function(){$("#value_upload").html($("#openVideo").val());},100);
 		});
 		$('.reaction').slideUp();
 		$('.report-field').slideUp();
@@ -312,6 +322,7 @@
                       <button type="button" name="inputImage" id="inputImage" class="btn btn-default"><i class="fa fa-file-image-o"></i>Image</button>
 					<input type="file" name="openVideo" id="openVideo" style="display:none;" accept="video/*">
                       <button type="button" name="inputVideo" id="inputVideo" class="btn btn-default"><i class="fa fa-file-video-o"></i>Video</button>
+					  <div id="value_upload"></div>
                     </div>
                  <div class="pull-right">
 					 <input type="submit" class="btn btn-default submit" name="postBTN" value="Submit">

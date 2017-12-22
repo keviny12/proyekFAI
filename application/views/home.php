@@ -24,7 +24,9 @@
 	            function setup() {
                 document.getElementById('inputImage').addEventListener('click', openDialog);
                 function openDialog() {
-                    document.getElementById('openImage').click();
+                    document.getElementById('openImage').click(
+					);
+					
                 }
 				document.getElementById('inputVideo').addEventListener('click', openDialog2);
                 function openDialog2() {
@@ -35,10 +37,21 @@
                  //   document.getElementById('formid').submit();
                 //}
             }
+	var show_url='';
 	$(document).ready(function(){
 		
 		$('.reaction').slideUp();
 		$('.notifications').slideUp();
+		$("#openImage").click(function(){
+			clearInterval(show_url);
+			show_url = setInterval(function(){$("#value_upload").html($("#openImage").val());},100);
+		});
+		
+		$("#openVideo").click(function(){
+			clearInterval(show_url);
+			show_url = setInterval(function(){$("#value_upload").html($("#openVideo").val());},100);
+		});
+		
 		
 		$('.notif-title').click(function(){
 			$('.notifications').slideToggle();
@@ -300,6 +313,7 @@
                       <button type="button" name="inputImage" id="inputImage" class="btn btn-default"><i class="fa fa-file-image-o"></i>Image</button>
 					<input type="file" name="openVideo" id="openVideo" style="display:none;" accept="video/*">
                       <button type="button" name="inputVideo" id="inputVideo" class="btn btn-default"><i class="fa fa-file-video-o"></i>Video</button>
+					  <div id="value_upload"></div>
                     </div>
                  <div class="pull-right">
 					 <input type="submit" class="btn btn-default submit" name="postBTN" value="Submit">
