@@ -223,7 +223,7 @@
 			
 			<div id="breadcrumb">Register > MyData <img src=<?php echo base_url("img/logo.png");?> height=20 class="logo col-sm-2" alt=""></div> 
             <div id="output"></div>
-            <div class="avatar"><img src=<?php echo base_url("ppicture/".$this->session->userdata('file_name')."");?> height=100 width=100 class="picture col-sm-2" alt="">My Picture</div>
+            <div class="avatar"><img src=<?php echo base_url("ppicture/user.png");?> height=100 width=100 class="picture col-sm-2" alt="">My Picture</div>
             <div class="form-box">
                     <input name="fname" type="text" placeholder="first name">
                     <input name="lname" type="text" placeholder="last name">

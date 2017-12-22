@@ -171,9 +171,9 @@ class Welcome extends CI_Controller {
 	public function register()
 	{
 		$post = $this->input->post();
-
+		
 		if(isset($_POST['upload'])){
-			$kode = $this->session->userdata("kodegbr");
+			$kode = strtoupper(substr($this->session->userdata('fname'),0,1).substr($this->session->userdata('lname'),0,1));
 			$urutan = $this->Model->get_urutan($kode) + 1;
 			$config['upload_path'] = './ppicture/';
 			$config['allowed_types'] = 'gif|jpg|png';
@@ -185,7 +185,7 @@ class Welcome extends CI_Controller {
 			{
 				$te = $this->upload->data();
 				$namafile = $te["file_name"];
-				$this->session->set_userdata('file_name',$namafile);
+				$this->session->set_userdata("kodegbr",$namafile);
 			}
 			else
 			{
@@ -207,8 +207,9 @@ class Welcome extends CI_Controller {
 					if($this->form_validation->run())
 					{
 						$sessiondata = array(
-							"kodegbr" => strtoupper(substr($post['fname'],0,1).substr($post['lname'],0,1)),
+							"kodegbr" => "user.png",
 							"fname" => $post['fname'],
+							"lname" => $post['lname'],
 							"name" => $post['fname']." ".$post['lname'],
 							"email" => $post['email'],
 							"birth" => $post['birth'],
@@ -216,10 +217,9 @@ class Welcome extends CI_Controller {
 							"gender" => $post['gender']
 						);
 						$this->session->set_userdata($sessiondata);
-						$this->load->view('register2');
 					
-						
-						
+						$this->load->view('register2');
+
 					}
 					else
 					{
@@ -265,8 +265,9 @@ class Welcome extends CI_Controller {
 		' . $message . '
 		</body>
 		</html>';
+		
 		//$email=$this->user->getEmail('yoelvndr');
-		$this->email->from('no-reply@mail.josefchristian.me', 'Encekbook Social Media');
+		$this->email->from('Unsos.herobo.com', 'Unsos Contact Center');
 		$this->email->to('yoelisnotyul@gmail.com');
 		$this->email->subject($subject);
 
@@ -296,7 +297,7 @@ class Welcome extends CI_Controller {
 			echo "alert('Register Success')";
 			echo "</script>";
 			
-			$this->load->view('index');
+			$this->load->view('register3');
 			
 		}
 		else if(isset($_POST['register'])){
